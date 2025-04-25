@@ -1,0 +1,550 @@
+.house-container {
+    font-family: 'Circular', -apple-system, BlinkMacSystemFont, sans-serif;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+  
+  .loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+  }
+  
+  .loading-spinner::after {
+    content: "";
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #ff385c;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .error-message, .not-found {
+    text-align: center;
+    padding: 40px 0;
+    color: #ff385c;
+    font-size: 18px;
+  }
+  
+  .house-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .house-header h1 {
+    font-size: 1em;
+    font-weight: 600;
+    line-height: inherit;
+    margin: 0;
+  }
+  
+  .thumbnail-grid {
+    display: grid;
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    height: 100%;
+  }
+
+  .save-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px;
+  }
+  
+  .save-icon, .saved-icon {
+    font-size: 18px;
+  }
+  
+  .saved-icon {
+    color: #ff385c;
+  }
+  
+  .image-gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr 0fr 1fr;
+    gap: 8px;
+    height: 500px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .main-image-container {
+    height: 100%;
+  }
+  
+  .main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px 0 0 12px;
+  }
+  
+  .thumbnail-container {
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
+    gap: 8px;
+  }
+  
+  .thumbnail-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 0 12px 12px 0;
+  }
+  
+  .thumbnail {
+    width: 100%;
+    height: 100%;
+    
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .thumbnail-wrapper:hover .thumbnail {
+    transform: scale(1.05);
+  }
+  .remaining-count {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 24px;
+    border-radius: 0 12px 12px 0;
+  }
+  
+  .house-info {
+    margin-top: 24px;
+  }
+  
+  .rating-location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .star-icon {
+    color: #ff385c;
+  }
+  
+  .divider {
+    color: #717171;
+  }
+  
+  .location {
+    color: #717171;
+    text-decoration: underline;
+  }
+  
+  .description {
+    font-size: 16px;
+    line-height: 24px;
+    margin-bottom: 16px;
+  }
+  
+  .price {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  @media (max-width: 768px) {
+    .image-gallery {
+      grid-template-columns: 1fr;
+      height: auto;
+    }
+    
+    .main-image {
+      border-radius: 12px 12px 0 0;
+    }
+    
+    .thumbnail-container {
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: 1fr;
+    }
+    
+    .thumbnail {
+      border-radius: 0 0 12px 12px;
+    }
+    
+    .thumbnail-wrapper.active {
+      box-shadow: 0 2px 0 0 #000000;
+    }
+  }
+
+
+  /* ---------------------------------------------------SideBar Design-------------------------------------------------- */
+
+
+
+  .booking-sidebar {
+    position: sticky;
+    top: 20px;
+    border: 1px solid #ebebeb;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .price-section h3 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  
+  .price-section h3 span {
+    font-weight: 400;
+    color: #717171;
+  }
+  
+  .date-selection {
+    border: 1px solid #b0b0b0;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  
+  .date-input {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    cursor: pointer;
+  }
+  
+  .date-field {
+    padding: 12px;
+    position: relative;
+  }
+  
+  .date-field:first-child {
+    border-right: 1px solid #b0b0b0;
+  }
+  
+  .date-field label {
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  
+  .date-value {
+    font-size: 14px;
+    color: #222;
+  }
+  
+  .guests-field {
+    padding: 12px;
+    border-top: 1px solid #b0b0b0;
+  }
+  
+  .guests-field label {
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  
+  .guests-value {
+    font-size: 14px;
+    color: #222;
+  }
+  
+  .calendar-container {
+    position: absolute;
+    z-index: 100;
+    margin-top: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .reserve-button {
+    width: 100%;
+    background: #FF5A5F;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 16px;
+    cursor: pointer;
+  }
+  
+  .reserve-button:hover {
+    background: #e04e54;
+  }
+  
+  .price-breakdown {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #ebebeb;
+  }
+  
+  .price-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    font-size: 16px;
+  }
+  
+  .price-total {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #ebebeb;
+    font-weight: 600;
+    font-size: 16px;
+  }
+  
+  .no-charge-notice {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+    color: #717171;
+  }
+
+
+
+  .house-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  
+  @media (max-width: 768px) {
+    .house-layout {
+      grid-template-columns: 1fr;
+    }
+    
+    .booking-container {
+      order: -1;
+      margin-bottom: 24px;
+    }
+  }
+
+    /* ---------------------------------------------------Description Design-------------------------------------------------- */
+
+.property-details {
+  margin-top: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.property-highlights h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.property-meta {
+  color: #717171;
+  margin-bottom: 24px;
+}
+
+.rating-host-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rating-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 16px;
+}
+
+.host-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.host-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.hosted-by {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+
+    /* ---------------------------------------------------Instructions Design-------------------------------------------------- */
+
+
+
+    
+.footer-hold{
+  position: absolute;
+  top: 206rem;
+  left: 10rem;
+}
+
+.footerLine1{
+  position: absolute;
+  top: 199rem;
+  left: 9rem;
+}
+
+.footer-pic{
+  width: 65rem;
+}
+
+.footer-things{
+  position: absolute;
+  top: 202rem;
+  left: 10rem;
+}
+
+
+
+    /* ---------------------------------------------------Host Design-------------------------------------------------- */
+
+
+.host-section {
+  margin: 2rem 0;
+  padding: 0 1rem;
+}
+
+.host-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 80%;
+  margin-left: 11em;
+}
+.host-card h2{
+  padding-bottom: 5vh;
+  padding-top: 3vh;
+  text-align: center;
+}
+
+.host-profile {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.host-avatar-large {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 1rem;
+}
+
+.host-info h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.host-info p {
+  margin: 0.2rem 0 0;
+  color: #666;
+}
+
+.host-stats {
+  display: flex;
+  justify-content: space-between;
+  margin: 1.5rem 0;
+  padding: 1rem 0;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-item strong {
+  display: block;
+  font-size: 1.2rem;
+}
+
+.stat-item span {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.host-details {
+  margin: 1.5rem 0;
+}
+
+.message-host-button {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: #ff5a5f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  margin: 1rem 0;
+  cursor: pointer;
+}
+
+.message-host-button:hover {
+  background-color: #e04a50;
+}
+
+.payment-note {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 1rem;
+}
+
+.host-languages {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.show-more {
+  background: none;
+  border: none;
+  color: #0066cc;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 0.5rem;
+}
+
+.show-more:hover {
+  text-decoration: underline;
+}

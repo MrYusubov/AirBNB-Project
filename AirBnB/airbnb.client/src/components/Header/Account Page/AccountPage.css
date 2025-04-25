@@ -1,0 +1,237 @@
+.profile-container-page {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.profile-form-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.profile-section-page {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem 2rem;
+}
+
+.profile-section-page h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.avatar-section-page {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.avatar-wrapper-page {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #fff;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-edit-page {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: #3498db;
+  color: white;
+  border-radius: 20px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.avatar-edit-page:hover {
+  background: #2980b9;
+}
+
+.avatar-edit-page svg {
+  width: 12px;
+  height: 12px;
+}
+
+.avatar-input {
+  display: none;
+}
+
+.form-group-page {
+  margin-bottom: 1.5rem;
+}
+
+.form-group-page label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.form-group-page input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-group-page input:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.form-actions-page {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.save-button-page {
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-button-page:hover {
+  background: #2980b9;
+  transform: translateY(-1px);
+}
+
+.password-button-page {
+  margin-left: 19em;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.password-button-page:hover {
+  background: #a52929;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .profile-container-page {
+    padding: 0 0.5rem;
+  }
+  
+  .profile-section-page {
+    padding: 1.2rem;
+  }
+  
+  .avatar-wrapper-page {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .form-group-page input {
+    padding: 0.7rem;
+  }
+  
+  .save-button-page {
+    padding: 0.7rem 1.5rem;
+    width: 100%;
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.modal-header {
+  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #777;
+  transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+  color: #000;
+}
+
+.modal input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.modal button {
+  width: 100%;
+  padding: 10px;
+  background: #ff385c;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.modal button:hover {
+  background: #e03150;
+}

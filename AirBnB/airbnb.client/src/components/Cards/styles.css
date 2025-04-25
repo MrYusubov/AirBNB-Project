@@ -1,0 +1,140 @@
+.cards-flex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 20px;
+  padding: 1rem 3rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card-container {
+  width: 270px;
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.card-box {
+  width: 100%;
+  font-family: "Arial", sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.card-box:hover {
+  transform: scale(1.02);
+}
+
+.swiper-container {
+  height: 270px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+}
+
+.swiper-container:hover .swiper-button-prev,
+.swiper-container:hover .swiper-button-next {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  color: white !important;
+  fill: white !important;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card-img {
+  height: 270px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+.card-info-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.card-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.card-rating svg {
+  color: #222;
+  font-size: 1.1rem;
+}
+
+.card-box .swiper-pagination-bullet-active {
+  background-color: white !important;
+}
+
+.card-box p {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-top: 0.2rem;
+}
+
+.card-box p span {
+  font-weight: 600;
+}
+
+.save-button:hover {
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+.card-box > div:last-child {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+@media only screen and (max-width: 1000px) {
+  .cards-flex {
+    justify-content: center;
+  }
+  
+  .card-container {
+    width: calc(50% - 20px);
+  }
+  
+  .swiper-container,
+  .card-img {
+    height: 250px;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  .cards-flex {
+    padding: 0 10px;
+  }
+  
+  .card-container {
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .swiper-container,
+  .card-img {
+    height: 300px;
+  }
+}
