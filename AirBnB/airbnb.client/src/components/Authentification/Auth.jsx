@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import './Auth.css';
-import { FaGoogle, FaFacebook, FaGithub, FaLinkedin } from 'react-icons/fa';
+import { FaGoogle } from 'react-icons/fa';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const url = "https://localhost:7149";
+
 const Auth = () => {
   const [isActive, setIsActive] = useState(false);
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ const Auth = () => {
   const handleLoginChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
@@ -50,7 +52,6 @@ const Auth = () => {
     }
   };
 
-
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -62,17 +63,17 @@ const Auth = () => {
         headers: { "Content-Type": "application/json" },
         withCredentials: true
       });
+
       const profileResponse = await axios.get(url + '/api/Account/profile', {
         withCredentials: true
       });
-  
+
       if (profileResponse.data) {
         localStorage.setItem('user', JSON.stringify(profileResponse.data));
-        
         localStorage.setItem('userId', profileResponse.data.id);
         localStorage.setItem('username', profileResponse.data.username);
       }
-  
+
       navigate('/');
     } catch (error) {
       alert(error.response?.data?.message || "Login failed");
@@ -80,25 +81,11 @@ const Auth = () => {
     }
   };
 
-
-
   return (
     <div className={`container ${isActive ? 'active' : ''}`} id="container">
       <div className="form-container sign-up">
         <form onSubmit={handleRegister}>
           <h1>Create Account</h1>
-          <div className="social-icons">
-            <a className="icons" href="https://localhost:7149/api/Account/ExternalLogin?provider=Google">
-              <FaGoogle />
-            </a>
-            <a className="icons" href="https://localhost:7149/api/Account/ExternalLogin?provider=Facebook">
-              <FaFacebook />
-            </a>
-            <a className="icons" href="https://localhost:7149/api/Account/ExternalLogin?provider=GitHub">
-              <FaGithub />
-            </a>
-
-          </div>
           <span>Register with E-mail</span>
           <input type="text" placeholder="Full Name" name="username" onChange={handleRegisterChange} required />
           <input type="email" placeholder="Enter E-mail" name="email" onChange={handleRegisterChange} required />
@@ -110,18 +97,6 @@ const Auth = () => {
       <div className="form-container sign-in">
         <form onSubmit={handleLogin}>
           <h1>Sign In</h1>
-          <div className="social-icons">
-            <a className="icons" href="https://localhost:7149/api/Account/ExternalLogin?provider=Google">
-              <FaGoogle />
-            </a>
-            <a className="icons" href="https://localhost:7149/api/Account/ExternalLogin?provider=Facebook">
-              <FaFacebook />
-            </a>
-            <a className="icons" href="https://localhost:7149/api/Account/ExternalLogin?provider=GitHub">
-              <FaGithub />
-            </a>
-
-          </div>
           <span>Login With Email & Password</span>
           <input type="text" placeholder="Enter Username" name="username" onChange={handleLoginChange} required />
           <input type="password" placeholder="Enter Password" name="password" onChange={handleLoginChange} required />
@@ -146,7 +121,6 @@ const Auth = () => {
         </div>
       </div>
     </div>
-
   );
 };
 

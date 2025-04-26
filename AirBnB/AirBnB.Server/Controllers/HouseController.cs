@@ -84,6 +84,7 @@ namespace AirBnB.Server.Controllers
                 Description = houseDto.Description,
                 PricePerNight = houseDto.PricePerNight,
                 Location = houseDto.Location,
+                Adress = houseDto.Adress,
                 OwnerId=ownerId,
                 RoomCount = houseDto.RoomCount,
                 CategoryId = houseDto.CategoryId,

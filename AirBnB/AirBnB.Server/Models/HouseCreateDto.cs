@@ -10,6 +10,7 @@ namespace AirBnB.Server.Models
         [Required]
         public string OwnerId { get; set; }
         public string Location { get; set; }
+        public string Adress { get; set; }
         public int RoomCount { get; set; }
         public int CategoryId { get; set; }
         public double Latitude { get; set; }

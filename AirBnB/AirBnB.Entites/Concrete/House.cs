@@ -15,6 +15,8 @@ namespace AirBnB.Entites.Concrete
 
         [Required]
         public decimal PricePerNight { get; set; }
+        [Required]
+        public string Adress { get; set; }
 
         [Required, MaxLength(255)]
         public string Location { get; set; }

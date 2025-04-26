@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./HouseForm.css";
 import { UploadCloud } from "lucide-react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Header from "./Header";
+
 const API_BASE_URL = "https://localhost:7149";
 const CLOUDINARY_CLOUD_NAME = "djosldcjf";
 const CLOUDINARY_UPLOAD_PRESET = "airbnb_uploads";
@@ -15,6 +16,7 @@ const HouseForm = () => {
     description: "",
     pricePerNight: "",
     location: "",
+    adress: "",
     roomCount: "",
     categoryId: "",
     maxPhotos: 5,
@@ -27,12 +29,29 @@ const HouseForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showMap, setShowMap] = useState(false);
+  const [addressSuggestions, setAddressSuggestions] = useState([]);
+  const [userLocation, setUserLocation] = useState(null);
+  const addressRef = useRef();
 
   const customIcon = new L.Icon({
     iconUrl: "/location.png",
     iconSize: [38, 38],
     iconAnchor: [19, 38],
   });
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (addressRef.current && !addressRef.current.contains(event.target)) {
+        setAddressSuggestions([]);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -139,6 +158,7 @@ const HouseForm = () => {
           description: "",
           pricePerNight: "",
           location: "",
+          adress: "",
           roomCount: "",
           categoryId: "",
           maxPhotos: 5,
@@ -158,6 +178,11 @@ const HouseForm = () => {
       setIsLoading(false);
     }
   };
+  const userLocationIcon = new L.Icon({
+    iconUrl: "/ownlocation.png",
+    iconSize: [40, 40],
+    iconAnchor: [15, 30],
+  });
 
   const handlePhotoChange = (index, file) => {
     const newPhotos = [...form.photos];
@@ -280,7 +305,48 @@ const HouseForm = () => {
               max="20"
             />
           </div>
+          <div className="form-group" ref={addressRef}>
+            <label>Adress</label>
+            <input
+              type="text"
+              name="adress"
+              placeholder="Enter the long adress"
+              value={form.adress}
+              onChange={async (e) => {
+                handleChange(e);
 
+                const query = e.target.value;
+                if (query.length > 2) {
+                  const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`);
+                  const data = await res.json();
+                  setAddressSuggestions(data);
+                } else {
+                  setAddressSuggestions([]);
+                }
+              }}
+              required
+            />
+            {addressSuggestions.length > 0 && (
+              <ul className="address-suggestions">
+                {addressSuggestions.map((suggestion, idx) => (
+                  <li
+                    key={idx}
+                    onClick={() => {
+                      setForm((prev) => ({
+                        ...prev,
+                        adress: suggestion.display_name,
+                        latitude: parseFloat(suggestion.lat),
+                        longitude: parseFloat(suggestion.lon),
+                      }));
+                      setAddressSuggestions([]);
+                    }}
+                  >
+                    {suggestion.display_name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <button type="button" className="map-btn" onClick={() => setShowMap(true)}>
             Choose Location From Map
           </button>
@@ -334,11 +400,53 @@ const HouseForm = () => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution="© OpenStreetMap contributors"
               />
+
+              <button
+                onClick={() => {
+                  if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                      (position) => {
+                        setUserLocation({
+                          lat: position.coords.latitude,
+                          lng: position.coords.longitude,
+                        });
+                      },
+                      (error) => {
+                        console.error(error);
+                        alert("Failed to get your location");
+                      }
+                    );
+                  } else {
+                    alert("Geolocation is not supported by your browser");
+                  }
+                }}
+                style={{
+                  position: "absolute",
+                  bottom: "10px",
+                  left: "10px",
+                  zIndex: 1000,
+                  background: "white",
+                  padding: "8px 12px",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  border: "none",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+                }}
+              >
+                📍 My Location
+              </button>
+
               <LocationSelector />
+
               {form.latitude && form.longitude && (
                 <Marker position={[form.latitude, form.longitude]} icon={customIcon} />
               )}
+
+              {userLocation && (
+                <Marker position={[userLocation.lat, userLocation.lng]} icon={userLocationIcon} />
+              )}
             </MapContainer>
+
           </div>
         )}
       </div>

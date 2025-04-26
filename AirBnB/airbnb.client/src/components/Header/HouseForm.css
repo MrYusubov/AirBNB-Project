@@ -190,8 +190,13 @@ body {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .upload-progress {
@@ -210,4 +215,29 @@ body {
   padding: 0.25rem 0;
   font-size: 0.9rem;
   transition: width 0.3s;
+}
+
+
+
+
+.address-suggestions {
+  list-style: none;
+  padding: 0;
+  margin: 11vh 0 0 0;
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  background: white;
+  z-index: 999;
+  position: absolute;
+  width: 100%;
+}
+
+.address-suggestions li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.address-suggestions li:hover {
+  background-color: #f0f0f0;
 }

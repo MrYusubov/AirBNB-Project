@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
@@ -43,28 +45,7 @@ builder.Services.AddIdentity<CustomIdentityUser, CustomIdentityRole>()
     .AddEntityFrameworkStores<AirBnbDbContext>()
 .AddDefaultTokenProviders();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
-builder.Services.AddAuthentication()
-    .AddGoogle(options =>
-    {
-        options.ClientId = "GOOGLE_CLIENT_ID";
-        options.ClientSecret = "GOOGLE_CLIENT_SECRET";
-        options.CallbackPath = "/signin-google";
-    })
-    .AddFacebook(options =>
-    {
-        options.AppId = "FACEBOOK_APP_ID";
-        options.AppSecret = "FACEBOOK_APP_SECRET";
-        options.CallbackPath = "/signin-facebook";
-    })
-    .AddGitHub(options =>
-    {
-        options.ClientId = "GITHUB_CLIENT_ID";
-        options.ClientSecret = "GITHUB_CLIENT_SECRET";
-        options.CallbackPath = "/signin-github";
-        options.Scope.Add("user:email");
-    });
-
-
+builder.Services.AddAuthentication();
 var app = builder.Build();
 app.UseCors("AllowReactApp");
 
