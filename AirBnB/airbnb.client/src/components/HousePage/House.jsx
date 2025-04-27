@@ -158,7 +158,7 @@ const House = () => {
                 </div>
 
                 <div className='booking-container'>
-                    <BookingSidebar pricePerNight={house.pricePerNight} />
+                    <BookingSidebar pricePerNight={house.pricePerNight} houseId={house.id} />
                 </div>
             </div>
             <HouseMap

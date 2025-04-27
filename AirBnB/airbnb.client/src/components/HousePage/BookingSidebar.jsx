@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { DateRangePicker } from 'react-date-range';
-import { addDays, format } from 'date-fns';
+import { addDays, format, eachDayOfInterval } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import '../HousePage/House.css';
 
-const BookingSidebar = ({ pricePerNight }) => {
+const BookingSidebar = ({ pricePerNight, houseId }) => {
+  const navigate = useNavigate();
   const [state, setState] = useState([
     {
       startDate: null,
@@ -15,14 +18,54 @@ const BookingSidebar = ({ pricePerNight }) => {
   ]);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [guests, setGuests] = useState(1);
+  const [disabledDates, setDisabledDates] = useState([]);
+
+  useEffect(() => {
+    const fetchReservedDates = async () => {
+      try {
+        const response = await axios.get(`https://localhost:7149/api/Bookings/reserved-dates/${houseId}`,{withCredentials: true});
+        const reserved = response.data;
+
+        let allDates = [];
+
+        reserved.forEach(res => {
+          const datesInRange = eachDayOfInterval({
+            start: new Date(res.startDate),
+            end: new Date(res.endDate)
+          });
+          allDates = [...allDates, ...datesInRange];
+        });
+
+        setDisabledDates(allDates);
+      } catch (error) {
+        console.error('Failed to fetch reserved dates', error);
+      }
+    };
+
+    fetchReservedDates();
+  }, [houseId]);
+
+  const handleReserve = () => {
+    if (state[0].startDate && state[0].endDate) {
+      navigate('/payment', {
+        state: {
+          total: total.total,
+          houseId: houseId,
+          startDate: state[0].startDate,
+          endDate: state[0].endDate,
+          guestId: localStorage.getItem("userId")
+        }
+      });
+    }
+  };
 
   const calculateTotal = () => {
     if (!state[0].startDate || !state[0].endDate) return 0;
-    
+
     const nights = Math.ceil((state[0].endDate - state[0].startDate) / (1000 * 60 * 60 * 24));
     const cleaningFee = 5;
     const serviceFee = Math.round(pricePerNight * nights * 0.14);
-    
+
     return {
       nights,
       cleaningFee,
@@ -58,32 +101,28 @@ const BookingSidebar = ({ pricePerNight }) => {
 
         {showDatePicker && (
           <div className="calendar-container">
-            <DateRangePicker
-              onChange={item => {
-                setState([item.selection]);
-                setShowDatePicker(false);
-              }}
-              showSelectionPreview={true}
-              moveRangeOnFirstSelection={false}
-              months={2}
-              ranges={state}
-              direction="horizontal"
-              minDate={new Date()}
-              rangeColors={["#FF5A5F"]}
-            />
-          </div>
+          <DateRangePicker
+            onChange={item => {
+              setState([item.selection]);
+              setShowDatePicker(false);
+            }}
+            showSelectionPreview={true}
+            moveRangeOnFirstSelection={false}
+            months={2}
+            ranges={state}
+            direction="horizontal"
+            minDate={new Date()}
+            rangeColors={["#FF5A5F"]}
+            disabledDates={disabledDates}
+          />
+        </div>
         )}
 
-        <div className="guests-field">
-          <label>GUESTS</label>
-          <div className="guests-value">
-            {guests} guest{guests !== 1 ? 's' : ''}
-          </div>
-        </div>
 
-        <button className="reserve-button">
-          {state[0].startDate && state[0].endDate ? 'Reserve' : 'Check availability'}
-        </button>
+
+<button className="reserve-button" onClick={handleReserve}>
+    {state[0].startDate && state[0].endDate ? 'Reserve' : 'Check availability'}
+  </button>
       </div>
 
       {state[0].startDate && state[0].endDate && (

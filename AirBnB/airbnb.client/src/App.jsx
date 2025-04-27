@@ -12,6 +12,7 @@ import ProfilePage from "./components/Header/Account Page/AccountPage.jsx";
 import Favorites from "./components/Header/Favorite Page/Favorites.jsx";
 import SearchResults from "./components/Header/SearchResult.jsx";
 import Chat from "./components/Header/MessagePage/Message.jsx";
+import PaymentPage from "./components/Payment/PaymentPage.jsx";
 function App() {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [houses, setHouses] = useState([]);
@@ -48,6 +49,7 @@ function App() {
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/messages" element={<Chat />} />
+        <Route path="/payment" element={<PaymentPage />} />
       </Routes>
     </div>
   );

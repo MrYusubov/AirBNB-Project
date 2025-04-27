@@ -93,7 +93,6 @@ namespace AirBnB.Server.Controllers
                 Longitude = houseDto.Longitude,
                 IsAvailable=false,
             };
-
             _context.House.Add(house);
             await _context.SaveChangesAsync();
 
