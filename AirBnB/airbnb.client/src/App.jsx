@@ -14,6 +14,7 @@ import SearchResults from "./components/Header/SearchResult.jsx";
 import Chat from "./components/Header/MessagePage/Message.jsx";
 import PaymentPage from "./components/Payment/PaymentPage.jsx";
 import History from "./components/Header/History.jsx";
+import YourHome from "./components/Header/YourHome/YourHome.jsx";
 function App() {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [houses, setHouses] = useState([]);
@@ -52,6 +53,7 @@ function App() {
         <Route path="/messages" element={<Chat />} />
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/history" element={<History />} />
+        <Route path="/your/home" element={<YourHome />} />
       </Routes>
     </div>
   );

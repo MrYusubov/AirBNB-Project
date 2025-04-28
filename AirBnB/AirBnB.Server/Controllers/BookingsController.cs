@@ -68,6 +68,60 @@ public class BookingsController : ControllerBase
 
         return Ok(bookings);
     }
+    
+    
+    [HttpGet("SellerBookings/{sellerId}")]
+    public async Task<ActionResult<IEnumerable<Booking>>> GetSellerBookings(string sellerId)
+    {
+        var bookings = await _context.Booking
+            .Include(b => b.House)
+            .Include(b => b.Guest)
+            .Where(b => b.House.OwnerId == sellerId)
+            .ToListAsync();
+
+        if (bookings == null)
+        {
+            return NotFound();
+        }
+
+        return bookings;
+    }
+
+    [HttpPatch("Confirm/{bookingId}")]
+    public async Task<IActionResult> ConfirmBooking(int bookingId)
+    {
+        var booking = await _context.Booking
+            .Include(b => b.House)
+            .FirstOrDefaultAsync(b => b.Id == bookingId);
+
+        if (booking == null)
+        {
+            return NotFound();
+        }
+
+        booking.IsConfirmed = true;
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpDelete("Delete/{bookingId}")]
+    public async Task<IActionResult> DeleteBooking(int bookingId)
+    {
+        var booking = await _context.Booking
+            .Include(b => b.House)
+            .FirstOrDefaultAsync(b => b.Id == bookingId);
+
+        if (booking == null)
+        {
+            return NotFound();
+        }
+
+        _context.Booking.Remove(booking);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 
 
 }

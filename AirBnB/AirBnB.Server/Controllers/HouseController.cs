@@ -130,5 +130,35 @@ namespace AirBnB.Server.Controllers
 
             return Ok(houses);
         }
+        
+        [HttpGet("UserHouses/{userId}")]
+        public async Task<ActionResult<IEnumerable<House>>> GetUserHouses(string userId)
+        {
+            var houses = await _context.House
+                .Where(h => h.OwnerId == userId)
+                .ToListAsync();
+
+            if (houses == null || houses.Count == 0)
+            {
+                return NotFound("Could not find house");
+            }
+
+            return Ok(houses);
+        }
+        
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteHouse(int id)
+        {
+            var house = await _context.House.FindAsync(id);
+            if (house == null)
+            {
+                return NotFound();
+            }
+
+            _context.House.Remove(house);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }

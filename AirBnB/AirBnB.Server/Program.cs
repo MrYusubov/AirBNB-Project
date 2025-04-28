@@ -45,6 +45,7 @@ builder.Services.AddIdentity<CustomIdentityUser, CustomIdentityRole>()
     .AddEntityFrameworkStores<AirBnbDbContext>()
 .AddDefaultTokenProviders();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddAuthentication();
 var app = builder.Build();
 app.UseCors("AllowReactApp");

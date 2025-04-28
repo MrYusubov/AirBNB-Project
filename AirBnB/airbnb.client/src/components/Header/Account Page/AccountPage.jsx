@@ -56,14 +56,14 @@ const ProfilePage = () => {
 
     const handleProfileSubmit = async (e) => {
         e.preventDefault();
-
+    
         let profilePicturePublicId = null;
-
+    
         if (selectedAvatarFile) {
             const formData = new FormData();
             formData.append("file", selectedAvatarFile);
             formData.append("upload_preset", "airbnb_uploads");
-
+    
             try {
                 const uploadRes = await axios.post("https://api.cloudinary.com/v1_1/djosldcjf/image/upload", formData);
                 profilePicturePublicId = uploadRes.data.public_id;
@@ -71,15 +71,21 @@ const ProfilePage = () => {
                 alert("Image upload failed");
                 return;
             }
+        } else {
+            const regex = /upload\/(?:v\d+\/)?([^\.]+)/;
+            const match = profile.avatar.match(regex);
+            if (match && match[1]) {
+                profilePicturePublicId = match[1];
+            }
         }
-
+    
         const updateData = {
             fullName: profile.fullName,
             email: profile.email,
             phoneNumber: profile.phone,
             profilePicture: profilePicturePublicId,
         };
-
+    
         try {
             await axios.put("https://localhost:7149/api/Account/profile", {
                 username: updateData.fullName,
@@ -92,6 +98,7 @@ const ProfilePage = () => {
             alert("Update failed");
         }
     };
+    
 
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();

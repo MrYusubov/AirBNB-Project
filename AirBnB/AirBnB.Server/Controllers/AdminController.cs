@@ -1,4 +1,6 @@
-﻿using AirBnB.DataAccess.Data;
+﻿using AirBnB.Business.Abstract;
+using AirBnB.Business.Concrete;
+using AirBnB.DataAccess.Data;
 using AirBnB.Entites.Concrete;
 using AirBnB.Server.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -13,10 +15,12 @@ namespace AirBnB.Server.Controllers
     public class AdminController : ControllerBase
     {
         private readonly AirBnbDbContext _context;
+        private readonly IEmailService _emailService;
 
-        public AdminController(AirBnbDbContext context)
+        public AdminController(AirBnbDbContext context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         [HttpGet("all")]
@@ -49,7 +53,7 @@ namespace AirBnB.Server.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> ConfirmHouse(int id)
         {
-            var house = await _context.House.FindAsync(id);
+            var house = await _context.House.Include(h => h.Owner).FirstOrDefaultAsync(h => h.Id == id);
             if (house == null)
             {
                 return NotFound();
@@ -58,8 +62,22 @@ namespace AirBnB.Server.Controllers
             house.IsAvailable = true;
             await _context.SaveChangesAsync();
 
+            if (house.Owner != null && !string.IsNullOrEmpty(house.Owner.Email))
+            {
+                await _emailService.SendEmailAsync(
+                    house.Owner.Email,
+                    "House Confirmation",
+                    $"Hello, {house.Owner.UserName}, your home: {house.Title} is confirmed by Admin!"
+                );
+            }
+            else
+            {
+                return BadRequest();
+            }
+
             return NoContent();
         }
+
 
         [HttpPost("Category")]
         [Authorize(Roles = "Admin")]

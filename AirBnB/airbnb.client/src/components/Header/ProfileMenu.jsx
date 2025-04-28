@@ -146,7 +146,7 @@ export default function BasicMenu() {
                 width: "100%",
               }}
             />
-            <MenuItem onClick={handleClose} className="menu-items">
+            <MenuItem onClick={() => { handleClose(); navigate("/your/home"); }} className="menu-items">
               Your Home
             </MenuItem>
             <MenuItem onClick={() => { handleClose(); navigate("/post/home"); }} className="menu-items">

@@ -1,0 +1,122 @@
+.your-home-page {
+    background: #fafafa;
+    padding: 30px;
+    min-height: 100vh;
+}
+
+.cards-section {
+    margin-top: 30px;
+}
+
+.reservations-section {
+    display: flex;
+    gap: 30px;
+    margin-top: 50px;
+    flex-wrap: wrap;
+}
+
+.reservations-panel,
+.reservations-chart {
+    flex: 1;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.reservations-panel:hover,
+.reservations-chart:hover {
+    transform: translateY(-4px);
+}
+
+.reservations-panel h3 {
+    color: #ff385c;
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.reservation-card {
+    background: #eeeaea;
+    padding: 18px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: box-shadow 0.2s ease;
+}
+
+.reservation-card:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.reservation-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.profile-pic {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ff385c;
+}
+
+.reservation-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.confirm-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.confirm-btn:hover {
+    background-color: #45a049;
+}
+
+.decline-btn {
+    background-color: #ff4d4f;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.decline-btn:hover {
+    background-color: #e04345;
+}
+
+.reservations-chart h3 {
+    color: #ff385c;
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.house-link {
+    color: #ff385c;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s ease;
+}
+
+.house-link:hover {
+    color: #e04345;
+}
