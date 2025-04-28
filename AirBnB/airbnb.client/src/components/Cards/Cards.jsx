@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Card from "./card";
+import Card from "./Card";
 import "./styles.css";
 
 function Cards({ list, selectedCategoryId }) {

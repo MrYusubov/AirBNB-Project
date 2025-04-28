@@ -138,3 +138,26 @@
     height: 300px;
   }
 }
+
+.history-title {
+  font-size: 2.5rem; 
+  font-weight: 700; 
+  text-align: center; 
+  margin-top: 40px; 
+  margin-bottom: 20px;
+  color: #e54646; 
+  letter-spacing: 1px; 
+  text-transform: uppercase;
+  position: relative; 
+}
+
+
+.history-title::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 3px;
+  background-color: #e54646; 
+  margin: 10px auto 0;
+  border-radius: 2px;
+}

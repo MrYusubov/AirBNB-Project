@@ -236,3 +236,31 @@
     height: 400px;
   }
 }
+
+
+
+
+.language-menu {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 8px 0;
+  width: 150px;
+  z-index: 10;
+}
+
+.language-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.language-option:hover {
+  background-color: #f5f5f5;
+}
+

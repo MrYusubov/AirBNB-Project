@@ -63,7 +63,6 @@ function Header() {
       </div>
       <div className="profile-container">
         <div className="airbnb-your-home">
-          <LanguageIcon sx={{ fontSize: "1.3rem" }} />
         </div>
         <div className="profile-div">
           <BasicMenu />

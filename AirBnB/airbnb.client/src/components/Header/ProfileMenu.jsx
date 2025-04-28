@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import "./styles.css";
 import { useEffect } from "react";
 import axios from "axios";
-import { FaHeart, FaUser, FaEnvelope } from "react-icons/fa";
+import { FaBookmark, FaUser, FaEnvelope,FaHistory } from "react-icons/fa";
 
 export default function BasicMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -127,13 +127,16 @@ export default function BasicMenu() {
         {isLoggedIn ? (
           <>
             <MenuItem className="menu-items" onClick={() => { handleClose(); navigate("/favorites"); }}>
-              <FaHeart style={{ marginRight: "8px" }} /> Favorites
+              <FaBookmark style={{ marginRight: "8px" }} /> Saved
             </MenuItem>
             <MenuItem className="menu-items" onClick={() => { handleClose(); navigate("/profile"); }}>
               <FaUser style={{ marginRight: "8px" }} /> Account
             </MenuItem>
             <MenuItem className="menu-items" onClick={() => { handleClose(); navigate("/messages"); }}>
               <FaEnvelope style={{ marginRight: "8px" }} /> Messages
+            </MenuItem>
+            <MenuItem className="menu-items" onClick={() => { handleClose(); navigate("/history"); }}>
+              <FaHistory style={{ marginRight: "8px" }} /> History
             </MenuItem>
 
             <div
@@ -144,10 +147,10 @@ export default function BasicMenu() {
               }}
             />
             <MenuItem onClick={handleClose} className="menu-items">
-              Airbnb Your Home
+              Your Home
             </MenuItem>
             <MenuItem onClick={() => { handleClose(); navigate("/post/home"); }} className="menu-items">
-              Host an experience
+              Post Your House
             </MenuItem>
             <div
               style={{

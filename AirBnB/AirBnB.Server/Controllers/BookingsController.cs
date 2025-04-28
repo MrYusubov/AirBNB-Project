@@ -1,8 +1,10 @@
 ﻿using AirBnB.DataAccess.Data;
 using AirBnB.Entites.Concrete;
 using AirBnB.Server.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AirBnB.Server.Controllers;
 
@@ -33,7 +35,7 @@ public class BookingsController : ControllerBase
             EndDate = bookingDto.EndDate,
             TotalPrice = bookingDto.TotalPrice,
             GuestId = user.Id,
-            IsConfirmed = true
+            IsConfirmed = false
         };
 
         _context.Booking.Add(booking);
@@ -52,5 +54,20 @@ public class BookingsController : ControllerBase
 
         return Ok(bookings);
     }
+    
+    [HttpGet("UserBookings/{guestId}")]
+    public async Task<IActionResult> GetUserBookings(string guestId)
+    {
+        if (string.IsNullOrEmpty(guestId))
+            return BadRequest("Guest ID is required.");
+
+        var bookings = await _context.Booking
+            .Include(b => b.House)
+            .Where(b => b.GuestId == guestId)
+            .ToListAsync();
+
+        return Ok(bookings);
+    }
+
 
 }
