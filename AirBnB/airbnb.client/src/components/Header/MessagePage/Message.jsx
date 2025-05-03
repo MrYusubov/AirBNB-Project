@@ -49,33 +49,41 @@ const Chat = () => {
       connection.on("ReceiveMessage", handleReceiveMessage);
 
       connectionRef.current = connection;
-      fetchUsers();
     };
 
     startConnection();
 
     return () => {
       if (connectionRef.current) {
-        connectionRef.current.off("ReceiveMessage", handleReceiveMessage);
         connectionRef.current.off("UpdateUserStatus", handleUpdateUserStatus);
         connectionRef.current.stop();
       }
     };
   }, []);
 
+  useEffect(() => {
+    if (currentUserId) {
+      fetchUsers();
+    }
+  }, [currentUserId]);
+
+
 
   const handleReceiveMessage = useCallback((msg) => {
     console.log("Received message:", msg);
-    setMessages(prev => [
-      ...prev,
-      {
-        id: msg.id,
-        sender: msg.senderId === currentUserId ? 1 : 2,
-        text: msg.content,
-        time: msg.sentAt,
-        isRead: msg.isRead
-      }
-    ]);
+    setMessages(prev => {
+      if (prev.find(m => m.id === msg.id)) return prev;
+      return [
+        ...prev,
+        {
+          id: msg.id,
+          sender: msg.senderId === currentUserId ? 1 : 2,
+          text: msg.content,
+          time: msg.sentAt,
+          isRead: msg.isRead
+        }
+      ];
+    });
   }, [currentUserId]);
 
   const handleUpdateUserStatus = useCallback((userId, isOnline) => {
@@ -89,7 +97,7 @@ const Chat = () => {
   const fetchUsers = async () => {
     try {
       const response = await api.get('/Message/GetAllUsers');
-  
+
       const transformedUsers = response.data
         .filter(user => user.id !== currentUserId && user.id !== "40cfb59d-484e-4db3-acb6-93c5d8c8cec9")
         .map(user => ({
@@ -100,18 +108,18 @@ const Chat = () => {
             : "/logo/user.png",
           status: user.isOnline ? 'online' : 'offline'
         }));
-  
+
       setUsers(transformedUsers);
-  
+
       if (!activeUser && transformedUsers.length > 0) {
         setActiveUser(transformedUsers[0].id);
       }
-  
+
     } catch (error) {
       console.error('Error fetching users:', error);
     }
   };
-  
+
 
   useEffect(() => {
     if (activeUser && currentUserId) {
@@ -192,7 +200,7 @@ const Chat = () => {
                 onClick={() => setActiveUser(user.id)}
               >
                 <div className="avatar-container">
-                  <img src={user.avatar}  className="user-avatar"
+                  <img src={user.avatar} className="user-avatar"
                   />
                   <BsCircleFill
                     className={`status-indicator ${user.status === 'online' ? 'online' : 'offline'}`}

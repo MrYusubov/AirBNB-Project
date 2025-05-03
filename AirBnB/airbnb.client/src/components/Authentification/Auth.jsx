@@ -8,6 +8,11 @@ const url = "https://localhost:7149";
 
 const Auth = () => {
   const [isActive, setIsActive] = useState(false);
+  const [step, setStep] = useState(1);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [verificationError, setVerificationError] = useState('');
+
   const navigate = useNavigate();
 
   const [registerData, setRegisterData] = useState({
@@ -32,6 +37,21 @@ const Auth = () => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
 
+  const handleVerifyCode = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(url + '/api/Account/verify-code', {
+        email: userEmail,
+        code: verificationCode
+      });
+
+      alert(response.data.message);
+      setIsActive(false);
+    } catch (error) {
+      setVerificationError(error.response?.data?.message || "Verification failed");
+    }
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
@@ -39,18 +59,16 @@ const Auth = () => {
         username: registerData.username,
         email: registerData.email,
         password: registerData.password
-      }, {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true
-      });
+      }, { headers: { "Content-Type": "application/json" }, withCredentials: true });
 
       alert(response.data.message);
-      setIsActive(false);
+      setUserEmail(response.data.email);
+      setStep(2);
     } catch (error) {
       alert(error.response?.data?.message || "Registration failed");
-      console.error(error.response?.data);
     }
   };
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -84,13 +102,31 @@ const Auth = () => {
   return (
     <div className={`container ${isActive ? 'active' : ''}`} id="container">
       <div className="form-container sign-up">
-        <form onSubmit={handleRegister}>
-          <h1>Create Account</h1>
-          <span>Register with E-mail</span>
-          <input type="text" placeholder="Full Name" name="username" onChange={handleRegisterChange} required />
-          <input type="email" placeholder="Enter E-mail" name="email" onChange={handleRegisterChange} required />
-          <input type="password" placeholder="Enter Password" name="password" onChange={handleRegisterChange} required />
-          <button type="submit">Sign Up</button>
+        <form onSubmit={step === 1 ? handleRegister : handleVerifyCode}>
+          {step === 1 ? (
+            <>
+              <h1>Create Account</h1>
+              <input type="text" placeholder="Full Name" name="username" onChange={handleRegisterChange} required />
+              <input type="email" placeholder="Enter E-mail" name="email" onChange={handleRegisterChange} required />
+              <input type="password" placeholder="Enter Password" name="password" onChange={handleRegisterChange} required />
+            </>
+          ) : (
+            <>
+              <h2>We have sent you a verification code via email</h2>
+              <label htmlFor="code">Enter Secure Code:</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder="Enter 6-digit code"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                required
+              />
+              {verificationError && <p style={{ color: 'red' }}>{verificationError}</p>}
+            </>
+          )}
+          <button type="submit">{step === 1 ? "Sign Up" : "Verify"}</button>
         </form>
       </div>
 

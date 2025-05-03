@@ -4,6 +4,7 @@ using AirBnB.Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using AirBnB.Business.Abstract;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -17,14 +18,17 @@ namespace AirBnB.Server.Controllers
         private readonly UserManager<CustomIdentityUser> _userManager;
         private readonly RoleManager<CustomIdentityRole> _roleManager;
         private readonly SignInManager<CustomIdentityUser> _signInManager;
+        private readonly IEmailService _emailService;
 
         public AccountController(UserManager<CustomIdentityUser> userManager,
             RoleManager<CustomIdentityRole> roleManager,
-            SignInManager<CustomIdentityUser> signInManager)
+            SignInManager<CustomIdentityUser> signInManager,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
+            _emailService = emailService;
         }
 
         [HttpPost("register")]
@@ -32,22 +36,30 @@ namespace AirBnB.Server.Controllers
         {
             if (ModelState.IsValid)
             {
-                CustomIdentityUser user = new CustomIdentityUser
+                var user = new CustomIdentityUser
                 {
                     UserName = model.Username,
                     Email = model.Email,
+                    EmailConfirmed = false,
+                    EmailConfirmationToken = new Random().Next(100000, 999999).ToString()
                 };
 
-                IdentityResult result = await _userManager.CreateAsync(user, model.Password);
+                var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    return Ok(new { message = "User registered successfully" });
+                    var subject = "Your verification code";
+                    var body = $"<h1>Your verification code: {user.EmailConfirmationToken}</h1>";
+                    await _emailService.SendEmailAsync(user.Email, subject, body);
+
+                    return Ok(new { message = "Verification code sent", email = user.Email });
                 }
-                return BadRequest(new { message = "Registration failed.", errors = result.Errors });
+
+                return BadRequest(new { message = "Registration failed", errors = result.Errors });
             }
 
-            return BadRequest(new { message = "Invalid data.", errors = ModelState.Values });
+            return BadRequest(new { message = "Invalid data", errors = ModelState.Values });
         }
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto model)
@@ -175,6 +187,23 @@ namespace AirBnB.Server.Controllers
                 isOnline = user.IsOnline
             });
         }
+        
+        [HttpPost("verify-code")]
+        public async Task<IActionResult> VerifyCode([FromBody] VerifyCodeDto model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null) return BadRequest(new { message = "User not found" });
+
+            if (user.EmailConfirmationToken == model.Code)
+            {
+                user.EmailConfirmed = true;
+                await _userManager.UpdateAsync(user);
+                return Ok(new { message = "Verification successful" });
+            }
+
+            return BadRequest(new { message = "Invalid verification code" });
+        }
+
 
     }
 }

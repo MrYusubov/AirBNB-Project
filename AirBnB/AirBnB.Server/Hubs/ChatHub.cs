@@ -78,7 +78,10 @@ namespace AirBnB.Server.Hubs
                 isRead = false
             };
 
-            await Clients.User(receiverId).SendAsync("ReceiveMessage", messageDto);
+            if (receiverId != senderId)
+            {
+                await Clients.User(receiverId).SendAsync("ReceiveMessage", messageDto);
+            }
         }
 
         public async Task MarkAsRead(string messageId)

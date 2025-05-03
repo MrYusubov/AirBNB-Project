@@ -8,6 +8,7 @@ namespace AirBnB.Entites.Concrete
         [Url]
         public string? ProfilePicture { get; set; }
         public bool IsOnline { get; set; }
+        public string? EmailConfirmationToken { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
