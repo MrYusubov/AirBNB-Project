@@ -56,9 +56,9 @@ function YourHome() {
 
     const prepareChartData = () => {
         const today = new Date();
-        const dates = Array.from({ length: 30 }, (_, i) => {
+        const dates = Array.from({ length: 31 }, (_, i) => {
             const date = new Date(today);
-            date.setDate(today.getDate() - i);
+            date.setDate(today.getDate() - (i - 2));
             return date.toISOString().split("T")[0];
         }).reverse();
 
@@ -83,39 +83,44 @@ function YourHome() {
             <div className="reservations-section">
                 <div className="reservations-panel">
                     <h3>Reservations</h3>
-                    {bookings.map((booking) => (
-                        <div className="reservation-card" key={booking.id}>
-                            <div className="reservation-info">
-                                <img
-                                    src={`https://res.cloudinary.com/djosldcjf/image/upload/${booking.guest.profilePicture}`}
-                                    alt="guest"
-                                    className="profile-pic"
-                                />
-                                <div>
-                                    <p><strong>{booking.guest.userName}</strong></p>
+                    {bookings
+                        .filter(booking => new Date(booking.startDate) > new Date())
+                        .map((booking) => (
+                            <div className="reservation-card" key={booking.id}>
+                                <div className="reservation-info">
+                                    <img
+                                        src={booking.guest.profilePicture
+                                            ? `https://res.cloudinary.com/djosldcjf/image/upload/${booking.guest.profilePicture}`
+                                            : "/logo/user.png"
+                                        }
+                                        alt="guest"
+                                        className="profile-pic"
+                                    />
+                                    <div>
+                                        <p><strong>{booking.guest.userName}</strong></p>
 
-                                    <p>
-                                        Home:{" "}
-                                        <a className="house-link">
-                                            {booking.house.title}
-                                        </a>
-                                    </p>
+                                        <p>
+                                            Home:{" "}
+                                            <a className="house-link">
+                                                {booking.house.title}
+                                            </a>
+                                        </p>
 
-                                    <p>Date: {booking.startDate.split("T")[0]} → {booking.endDate.split("T")[0]}</p>
-                                    <p>Total Price: <strong>${booking.totalPrice}</strong></p>
+                                        <p>Date: {booking.startDate.split("T")[0]} → {booking.endDate.split("T")[0]}</p>
+                                        <p>Total Price: <strong>${booking.totalPrice}</strong></p>
+                                    </div>
+                                </div>
+
+                                <div className="reservation-actions">
+                                    {!booking.isConfirmed && (
+                                        <>
+                                            <button className="confirm-btn" onClick={() => handleConfirm(booking.id)}>Confirm</button>
+                                        </>
+                                    )}
+                                    <button className="decline-btn" onClick={() => handleDecline(booking.id)}>Decline</button>
                                 </div>
                             </div>
-
-                            <div className="reservation-actions">
-                                {!booking.isConfirmed && (
-                                    <>
-                                        <button className="confirm-btn" onClick={() => handleConfirm(booking.id)}>Confirm</button>
-                                    </>
-                                )}
-                                <button className="decline-btn" onClick={() => handleDecline(booking.id)}>Decline</button>
-                            </div>
-                        </div>
-                    ))}
+                        ))}
                 </div>
 
                 <div className="reservations-chart">
