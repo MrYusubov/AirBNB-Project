@@ -73,67 +73,69 @@ function YourHome() {
     const chartData = prepareChartData();
 
     return (
-        <div className="your-home-page">
+        <div>
             <Header />
-            <div className="cards-section">
-                <h2 className="history-title">My Houses</h2>
-                <Cards list={houses} />
-            </div>
-
-            <div className="reservations-section">
-                <div className="reservations-panel">
-                    <h3>Reservations</h3>
-                    {bookings
-                        .filter(booking => new Date(booking.startDate) > new Date())
-                        .map((booking) => (
-                            <div className="reservation-card" key={booking.id}>
-                                <div className="reservation-info">
-                                    <img
-                                        src={booking.guest.profilePicture
-                                            ? `https://res.cloudinary.com/djosldcjf/image/upload/${booking.guest.profilePicture}`
-                                            : "/logo/user.png"
-                                        }
-                                        alt="guest"
-                                        className="profile-pic"
-                                    />
-                                    <div>
-                                        <p><strong>{booking.guest.userName}</strong></p>
-
-                                        <p>
-                                            Home:{" "}
-                                            <a className="house-link">
-                                                {booking.house.title}
-                                            </a>
-                                        </p>
-
-                                        <p>Date: {booking.startDate.split("T")[0]} → {booking.endDate.split("T")[0]}</p>
-                                        <p>Total Price: <strong>${booking.totalPrice}</strong></p>
-                                    </div>
-                                </div>
-
-                                <div className="reservation-actions">
-                                    {!booking.isConfirmed && (
-                                        <>
-                                            <button className="confirm-btn" onClick={() => handleConfirm(booking.id)}>Confirm</button>
-                                        </>
-                                    )}
-                                    <button className="decline-btn" onClick={() => handleDecline(booking.id)}>Decline</button>
-                                </div>
-                            </div>
-                        ))}
+            <div className="your-home-page">
+                <div className="cards-section">
+                    <h2 className="history-title">My Houses</h2>
+                    <Cards list={houses} />
                 </div>
 
-                <div className="reservations-chart">
-                    <h3>Reservation Chart (Last 30 Days)</h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <LineChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="date" />
-                            <YAxis allowDecimals={false} />
-                            <Tooltip />
-                            <Line type="monotone" dataKey="reservations" stroke="#ff385c" strokeWidth={3} />
-                        </LineChart>
-                    </ResponsiveContainer>
+                <div className="reservations-section">
+                    <div className="reservations-panel">
+                        <h3>Reservations</h3>
+                        {bookings
+                            .filter(booking => new Date(booking.startDate) > new Date())
+                            .map((booking) => (
+                                <div className="reservation-card" key={booking.id}>
+                                    <div className="reservation-info">
+                                        <img
+                                            src={booking.guest.profilePicture
+                                                ? `https://res.cloudinary.com/djosldcjf/image/upload/${booking.guest.profilePicture}`
+                                                : "/logo/user.png"
+                                            }
+                                            alt="guest"
+                                            className="profile-pic"
+                                        />
+                                        <div>
+                                            <p><strong>{booking.guest.userName}</strong></p>
+
+                                            <p>
+                                                Home:{" "}
+                                                <a className="house-link">
+                                                    {booking.house.title}
+                                                </a>
+                                            </p>
+
+                                            <p>Date: {booking.startDate.split("T")[0]} → {booking.endDate.split("T")[0]}</p>
+                                            <p>Total Price: <strong>${booking.totalPrice}</strong></p>
+                                        </div>
+                                    </div>
+
+                                    <div className="reservation-actions">
+                                        {!booking.isConfirmed && (
+                                            <>
+                                                <button className="confirm-btn" onClick={() => handleConfirm(booking.id)}>Confirm</button>
+                                            </>
+                                        )}
+                                        <button className="decline-btn" onClick={() => handleDecline(booking.id)}>Decline</button>
+                                    </div>
+                                </div>
+                            ))}
+                    </div>
+
+                    <div className="reservations-chart">
+                        <h3>Reservation Chart (Last 30 Days)</h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <LineChart data={chartData}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="date" />
+                                <YAxis allowDecimals={false} />
+                                <Tooltip />
+                                <Line type="monotone" dataKey="reservations" stroke="#ff385c" strokeWidth={3} />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
             </div>
         </div>

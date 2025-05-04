@@ -52,6 +52,18 @@ const HouseForm = () => {
     };
   }, []);
 
+  useEffect(() => {
+    setForm((prev) => {
+      const newPhotos = [...prev.photos];
+      const desiredLength = parseInt(prev.maxPhotos);
+
+      while (newPhotos.length < desiredLength) newPhotos.push(null);
+      if (newPhotos.length > desiredLength) newPhotos.length = desiredLength;
+
+      return { ...prev, photos: newPhotos };
+    });
+  }, [form.maxPhotos]);
+
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -72,8 +84,19 @@ const HouseForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "maxPhotos") {
+      const max = Math.max(1, Math.min(20, parseInt(value)));
+      setForm((prev) => {
+        const trimmedPhotos = prev.photos.slice(0, max);
+        while (trimmedPhotos.length < max) trimmedPhotos.push(null);
+        return { ...prev, maxPhotos: max, photos: trimmedPhotos };
+      });
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
   };
+
 
   const uploadImageToCloudinary = async (file) => {
     const formData = new FormData();
@@ -189,6 +212,7 @@ const HouseForm = () => {
     newPhotos[index] = file;
     setForm((prev) => ({ ...prev, photos: newPhotos }));
   };
+
 
   const removePhoto = (index) => {
     const newPhotos = [...form.photos];
@@ -360,24 +384,43 @@ const HouseForm = () => {
           <div className="form-group">
             <label>Photos (Exactly {form.maxPhotos} required)</label>
             <div className="photo-upload-grid">
-              {[...Array(parseInt(form.maxPhotos))].map((_, index) => (
-                <div key={index} className="photo-slot">
-                  {form.photos[index] ? (
-                    <div className="photo-preview-container">
-                      <img src={URL.createObjectURL(form.photos[index])} alt={`Preview ${index + 1}`} className="photo-preview" />
-                      <button type="button" className="remove-photo-btn" onClick={() => removePhoto(index)}>×</button>
-                    </div>
-                  ) : (
-                    <label className="upload-label">
-                      <UploadCloud size={28} />
-                      <span>Upload</span>
-                      <input type="file" accept="image/*" onChange={(e) => handlePhotoChange(index, e.target.files[0])} style={{ display: "none" }} />
-                    </label>
-                  )}
-                </div>
-              ))}
+              {Array.from({ length: form.maxPhotos }, (_, index) => {
+                const photoFile = form.photos[index] || null;
+                return (
+                  <div key={index} className="photo-slot">
+                    {photoFile ? (
+                      <div className="photo-preview-container">
+                        <img
+                          src={URL.createObjectURL(photoFile)}
+                          alt={`Preview ${index + 1}`}
+                          className="photo-preview"
+                        />
+                        <button
+                          type="button"
+                          className="remove-photo-btn"
+                          onClick={() => removePhoto(index)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="upload-label">
+                        <UploadCloud size={28} />
+                        <span>Upload</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handlePhotoChange(index, e.target.files[0])}
+                          style={{ display: "none" }}
+                        />
+                      </label>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
+
 
           {uploadProgress > 0 && uploadProgress < 100 && (
             <div className="upload-progress">

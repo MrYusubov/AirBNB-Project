@@ -16,7 +16,12 @@ function History() {
         const fetchBookings = async () => {
             try {
                 const response = await axios.get(`https://localhost:7149/api/Bookings/UserBookings/${guestId}`, { withCredentials: true });
-                setBookings(response.data.filter(b => b.isConfirmed));
+                const today = new Date();
+                setBookings(response.data.filter(b => {
+                    const endDate = new Date(b.endDate);
+                    return b.isConfirmed && endDate < today;
+                }));
+
             } catch (error) {
                 console.error("Failed to fetch bookings", error);
             }
@@ -41,7 +46,7 @@ function History() {
 
     return (
         <div>
-            <Header/>
+            <Header />
             <h1 className="history-title">Your Purchase History</h1>
             <div className="cards-flex">
                 {bookings.map((booking, index) => (
