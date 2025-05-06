@@ -3,6 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cards from "../Cards/Cards";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { AgGridReact } from 'ag-grid-react';
+import { ClientSideRowModelModule } from 'ag-grid-community';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-quartz.css';
 import Header from "./Header";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -14,6 +18,11 @@ function SearchResults() {
     const [houses, setHouses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [columnDefs] = useState([
+        { headerName: "Location", field: "location", sortable: true, filter: true },
+        { headerName: "Address", field: "adress", sortable: true, filter: true },
+        { headerName: "Price per Night", field: "pricePerNight", sortable: true, filter: true },
+    ]);
 
     const searchParams = new URLSearchParams(location.search);
     const locationQuery = searchParams.get("location");
@@ -79,12 +88,30 @@ function SearchResults() {
 
     return (
         <div>
-            <Header/>
+            <Header />
             <div className="search-results-container">
                 <div className="houses-list">
                     <h2 className="search-results-title">Houses in {locationQuery}</h2>
-                    <Cards list={houses} />
+
+                    <div className="ag-theme-quartz" style={{ height: 150, width: "80%", marginTop: 20 }}>
+                        <AgGridReact
+                            rowData={houses}
+                            columnDefs={columnDefs}
+                            defaultColDef={{
+                                sortable: true,
+                                filter: true,
+                                resizable: true,
+                            }}
+                            pagination={true}
+                            paginationPageSize={5}
+                            modules={[ClientSideRowModelModule]}
+                        />
+
+                    </div>
+
+                    <Cards list={houses} style={{ marginTop: "30px" }} />
                 </div>
+
 
                 <div className="map-container">
                     <MapContainer

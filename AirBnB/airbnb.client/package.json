@@ -17,6 +17,8 @@
     "@microsoft/signalr": "^8.0.7",
     "@mui/icons-material": "^7.0.1",
     "@mui/material": "^7.0.2",
+    "ag-grid-community": "^33.2.4",
+    "ag-grid-react": "^33.2.4",
     "axios": "^1.8.4",
     "date-fns": "^4.1.0",
     "leaflet": "^1.9.4",

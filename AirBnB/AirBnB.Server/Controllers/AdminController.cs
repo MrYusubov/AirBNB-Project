@@ -45,7 +45,18 @@ namespace AirBnB.Server.Controllers
 
             _context.House.Remove(house);
             await _context.SaveChangesAsync();
-
+            if (house.Owner != null && !string.IsNullOrEmpty(house.Owner.Email))
+            {
+                await _emailService.SendEmailAsync(
+                    house.Owner.Email,
+                    "House Delete",
+                    $"Hello, {house.Owner.UserName}, your home: {house.Title} is deleted by Admin!"
+                );
+            }
+            else
+            {
+                return BadRequest();
+            }
             return NoContent();
         }
 

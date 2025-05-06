@@ -124,12 +124,17 @@ namespace AirBnB.Server.Controllers
                 return BadRequest("Location is required");
             }
 
+            var loweredQuery = location.ToLower();
+
             var houses = await _context.House
-                .Where(h => h.Location.ToLower().Contains(location.ToLower()))
+                .Where(h =>
+                    h.Location.ToLower().Contains(loweredQuery) ||
+                    h.Adress.ToLower().Contains(loweredQuery))
                 .ToListAsync();
 
             return Ok(houses);
         }
+
         
         [HttpGet("UserHouses/{userId}")]
         public async Task<ActionResult<IEnumerable<House>>> GetUserHouses(string userId)
