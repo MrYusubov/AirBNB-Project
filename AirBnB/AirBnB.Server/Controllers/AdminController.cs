@@ -44,6 +44,13 @@ namespace AirBnB.Server.Controllers
             }
 
             _context.House.Remove(house);
+            var notification = new Notification
+            {
+                ReceiverId = house.OwnerId,
+                Title="Delete",
+                Message="Your house deleted by admin."
+            };
+            await _context.Notifications.AddAsync(notification);
             await _context.SaveChangesAsync();
             if (house.Owner != null && !string.IsNullOrEmpty(house.Owner.Email))
             {
@@ -71,8 +78,14 @@ namespace AirBnB.Server.Controllers
             }
 
             house.IsAvailable = true;
+            var notification = new Notification
+            {
+                ReceiverId = house.OwnerId,
+                Title="Confirm",
+                Message="Your house confirmed by admin."
+            };
+            await _context.Notifications.AddAsync(notification);
             await _context.SaveChangesAsync();
-
             if (house.Owner != null && !string.IsNullOrEmpty(house.Owner.Email))
             {
                 await _emailService.SendEmailAsync(

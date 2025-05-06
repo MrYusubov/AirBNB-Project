@@ -19,6 +19,7 @@ namespace AirBnB.DataAccess.Data
         public DbSet<Favorite> Favorite { get; set; }
         public DbSet<DynamicPricing> DynamicPricing { get; set; }
         public DbSet<Message> Message { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

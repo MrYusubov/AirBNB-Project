@@ -1,4 +1,5 @@
-﻿using AirBnB.DataAccess.Data;
+﻿using AirBnB.Business.Abstract;
+using AirBnB.DataAccess.Data;
 using AirBnB.Entites.Concrete;
 using AirBnB.Server.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -14,11 +15,13 @@ public class BookingsController : ControllerBase
 {
     private readonly AirBnbDbContext _context;
     private readonly UserManager<CustomIdentityUser> _userManager;
+    private readonly IEmailService _emailService;
 
-    public BookingsController(AirBnbDbContext context, UserManager<CustomIdentityUser> userManager)
+    public BookingsController(AirBnbDbContext context, UserManager<CustomIdentityUser> userManager, IEmailService emailService)
     {
         _context = context;
         _userManager = userManager;
+        _emailService = emailService;
     }
 
     [HttpPost]
@@ -39,8 +42,27 @@ public class BookingsController : ControllerBase
         };
 
         _context.Booking.Add(booking);
+        var house=await _context.House.Include(h=>h.Owner).FirstOrDefaultAsync(h => h.Id == booking.HouseId);
+        var notification = new Notification
+        {
+            ReceiverId = house.OwnerId,
+            Title="Booking",
+            Message="You have new customer.Please check that.Have a good day :)"
+        };
+        await _context.Notifications.AddAsync(notification);
         await _context.SaveChangesAsync();
-
+        if (house.Owner != null && !string.IsNullOrEmpty(house.Owner.Email))
+        {
+            await _emailService.SendEmailAsync(
+                house.Owner.Email,
+                "New Reservation",
+                $"Hello, {house.Owner.UserName}, you've new reservation,please check that.Have a good day :)"
+            );
+        }
+        else
+        {
+            return BadRequest();
+        }
         return Ok(booking);
     }
     
@@ -100,7 +122,22 @@ public class BookingsController : ControllerBase
         }
 
         booking.IsConfirmed = true;
+        var notification = new Notification
+        {
+            ReceiverId = booking.GuestId,
+            Title="Reservation Confirm",
+            Message="Your Reservation confirmed by host."
+        };
+        await _context.Notifications.AddAsync(notification);
         await _context.SaveChangesAsync();
+        
+        var owner = await _userManager.FindByIdAsync(booking.GuestId.ToString());
+        
+        await _emailService.SendEmailAsync(
+            owner.Email,
+            "Reservation Confirm",
+            $"Hello, {owner.UserName}, your reservation confirmed by host."
+        );
 
         return NoContent();
     }
@@ -118,7 +155,23 @@ public class BookingsController : ControllerBase
         }
 
         _context.Booking.Remove(booking);
+        
+        var notification = new Notification
+        {
+            ReceiverId = booking.GuestId,
+            Title="Reservation Decline",
+            Message="Your Reservation declined by host."
+        };
+        await _context.Notifications.AddAsync(notification);
         await _context.SaveChangesAsync();
+        
+        var owner = await _userManager.FindByIdAsync(booking.GuestId.ToString());
+        
+        await _emailService.SendEmailAsync(
+            owner.Email,
+            "Reservation decline",
+            $"Hello, {owner.UserName}, your reservation declined by host."
+        );
 
         return NoContent();
     }

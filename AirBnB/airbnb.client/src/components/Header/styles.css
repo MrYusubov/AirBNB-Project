@@ -57,10 +57,11 @@
 
 .airbnb-your-home {
   padding: 1rem;
+  padding-top: 1.2rem;
   font-weight: 600;
   border-radius: 2rem;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .airbnb-your-home:hover {
@@ -266,4 +267,53 @@
 
 
 
+.notification-popup {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  width: 300px;
+  background: white;
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.2);
+  border-radius: 10px;
+  z-index: 10;
+  padding: 10px;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.delete-all-btn {
+  background: none;
+  border: none;
+  color: red;
+  cursor: pointer;
+}
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.notification-item p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.delete-icon {
+  color: red;
+  cursor: pointer;
+}
+
+.no-notifications {
+  text-align: center;
+  padding: 20px;
+  color: gray;
+}
 
