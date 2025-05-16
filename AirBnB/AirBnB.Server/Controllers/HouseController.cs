@@ -25,21 +25,48 @@ namespace AirBnB.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<House>>> GetHouses()
         {
-            var houses = await _context.House.ToListAsync();
+            var houses = await _context.House
+                .Include(h => h.Reviews)
+                .ToListAsync();
+            
+            foreach (var house in houses)
+            {
+                if (house.Reviews != null && house.Reviews.Any())
+                {
+                    house.Rating = house.Reviews.Average(r => r.Stars);
+                }
+                else
+                {
+                    house.Rating = 0;
+                }
+            }
+    
             return Ok(houses);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<House>> GetHouse(int id)
         {
-            var house = await _context.House.FindAsync(id);
-            var users= await _context.Users.ToListAsync();
+            var house = await _context.House
+                .Include(h => h.Reviews)
+                .FirstOrDefaultAsync(h => h.Id == id);
+        
+            var users = await _context.Users.ToListAsync();
             var user = users.FirstOrDefault(x => x.Id == house.OwnerId);
             house.Owner = user;
 
             if (house == null)
             {
                 return NotFound();
+            }
+
+            if (house.Reviews != null && house.Reviews.Any())
+            {
+                house.Rating = house.Reviews.Average(r => r.Stars);
+            }
+            else
+            {
+                house.Rating = 0;
             }
 
             return house;

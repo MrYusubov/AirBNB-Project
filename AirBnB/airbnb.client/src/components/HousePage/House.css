@@ -80,7 +80,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr 0fr 1fr;
     gap: 8px;
-    height: 600px;
+    height: 100%;
     width: 100%;
     border-radius: 12px;
     overflow: hidden;
@@ -88,6 +88,7 @@
   
   .main-image-container {
     height: 100%;
+    width: 50vh;
   }
   
   .main-image {
@@ -105,8 +106,8 @@
   
   .thumbnail-wrapper {
     position: relative;
-    width: 100%;
-    height: 100%;
+    width: 20vh;
+    height: 30vh;
     cursor: pointer;
     overflow: hidden;
     border-radius: 0 12px 12px 0;
@@ -213,8 +214,10 @@
     border-radius: 12px;
     padding: 24px;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-    width: 100%;
-    max-width: 400px;
+    width: 50vh;
+    max-width: 60vh;
+    margin-top: 12vh;
+    margin-left: 5em;
   }
   
   .price-section h3 {
@@ -413,31 +416,6 @@
 
 
 
-    
-.footer-hold{
-  position: absolute;
-  top: 206rem;
-  left: 10rem;
-}
-
-.footerLine1{
-  position: absolute;
-  top: 199rem;
-  left: 9rem;
-}
-
-.footer-pic{
-  width: 65rem;
-}
-
-.footer-things{
-  position: absolute;
-  top: 202rem;
-  left: 10rem;
-}
-
-
-
     /* ---------------------------------------------------Host Design-------------------------------------------------- */
 
 
@@ -519,6 +497,8 @@
   border-radius: 8px;
   font-weight: bold;
   margin: 1rem 0;
+  padding-top: 1.5em;
+  padding-bottom: 1.5em;
   cursor: pointer;
 }
 

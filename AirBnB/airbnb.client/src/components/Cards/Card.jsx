@@ -187,7 +187,7 @@ function Card({ card, isAdmin }) {
             <h3 className="card-title">{card.location}</h3>
             <div className="card-rating">
               <StarRateRoundedIcon />
-              <p>{card.rating}</p>
+              <p>{card.rating || 'No reviews'}</p>
             </div>
           </div>
           <p style={{ margin: 0, color: "var(--font-grey)" }}>{card.roomCount} Room</p>

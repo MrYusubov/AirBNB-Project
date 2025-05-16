@@ -34,6 +34,7 @@ function ReviewModal({ open, handleClose, houseId, onReviewPosted }) {
 
       onReviewPosted();
       handleClose();
+      window.location.reload();
     } catch (error) {
       console.error("Error posting review:", error);
     }

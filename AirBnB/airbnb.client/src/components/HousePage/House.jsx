@@ -5,7 +5,6 @@ import { FaRegBookmark, FaBookmark, FaStar } from 'react-icons/fa';
 import Header from '../Header/Header';
 import '../HousePage/House.css';
 import BookingSidebar from './BookingSidebar';
-import Instructions from './Instructions';
 import HouseMap from './HouseMap';
 import Reviews from './Reviews';
 
@@ -44,6 +43,55 @@ const House = () => {
     fetchHouse();
   }, [id]);
 
+  useEffect(() => {
+    const checkFavorite = async () => {
+      const userId = localStorage.getItem('userId');
+      if (!userId) return;
+
+      try {
+        const response = await axios.get('https://localhost:7149/api/Favorite/Check', {
+          params: {
+            userId,
+            houseId: id,
+          },
+        });
+        setIsSaved(response.data.isFavorite);
+      } catch (error) {
+        console.error("Error checking favorite status:", error);
+      }
+    };
+
+    checkFavorite();
+  }, [id]);
+
+  const toggleFavorite = async () => {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      alert("Please log in to save this house.");
+      return;
+    }
+
+    try {
+      if (isSaved) {
+        await axios.delete('https://localhost:7149/api/Favorite/Remove', {
+          params: {
+            userId,
+            houseId: id,
+          },
+        });
+        setIsSaved(false);
+      } else {
+        await axios.post('https://localhost:7149/api/Favorite/Add', {
+          userId,
+          houseId: parseInt(id),
+        });
+        setIsSaved(true);
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+    }
+  };
+
   const openImageModal = (index) => {
     setModalImageIndex(index);
     setIsModalOpen(true);
@@ -61,7 +109,7 @@ const House = () => {
           <div className="house-content">
             <div className="house-header">
               <h1>{house.title}</h1>
-              <button onClick={() => setIsSaved(!isSaved)} className="save-button">
+              <button onClick={toggleFavorite} className="save-button">
                 {isSaved ? (
                   <>
                     <FaBookmark className="saved-icon" />
@@ -180,30 +228,17 @@ const House = () => {
             />
             <div className="host-info">
               <h3>{house.owner.userName}</h3>
-              <p>Host</p>
             </div>
           </div>
-          <div className="host-stats">
-            <div className="stat-item"><strong>{house.rating}</strong><span>Rating</span></div>
-            <div className="stat-item"><strong>100%</strong><span>Response rate</span></div>
-            <div className="stat-item"><strong>1 hour</strong><span>Response time</span></div>
-          </div>
           <div className="host-details">
-            <p>Response rate is 100%</p>
-            <p>Response within an hour</p>
             <button className="message-host-button" onClick={() => navigate('/messages')}>Message host</button>
             <p className="payment-note">
               To help perfect your payment, always use advice to send money and communicate with hosts.
             </p>
           </div>
-          <div className="host-languages">
-            <p>Speaks English</p>
-            <button className="show-more">Show more ▶</button>
-          </div>
         </div>
       </div>
 
-      <Instructions />
 
       {isModalOpen && (
         <div className="image-modal-overlay" onClick={() => setIsModalOpen(false)}>

@@ -26,7 +26,7 @@ const PaymentPage = () => {
 
     const handlePayment = async (e) => {
         e.preventDefault();
-        if (cardNumber.length !== 12 || !expiryDate || !cvv) {
+        if (cardNumber.length !== 16 || !expiryDate || !cvv) {
             setError('Please fill all fields correctly.');
             return;
         }
@@ -76,9 +76,9 @@ const PaymentPage = () => {
                         <input
                             type="text"
                             value={cardNumber}
-                            maxLength="12"
+                            maxLength="16"
                             onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, ''))}
-                            placeholder="Enter 12-digit card number"
+                            placeholder="Enter 16-digit card number"
                         />
 
                         <label>Expiry Date</label>
@@ -93,7 +93,7 @@ const PaymentPage = () => {
                         <input
                             type="text"
                             value={cvv}
-                            maxLength="4"
+                            maxLength="3"
                             onChange={(e) => setCvv(e.target.value.replace(/\D/g, ''))}
                             placeholder="Enter CVV"
                         />

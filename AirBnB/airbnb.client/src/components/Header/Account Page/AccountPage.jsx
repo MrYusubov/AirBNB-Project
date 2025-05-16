@@ -3,6 +3,9 @@ import axios from 'axios';
 import "./AccountPage.css";
 import Header from '../Header';
 import { useNavigate } from 'react-router-dom';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+
 
 const ProfilePage = () => {
     const [profile, setProfile] = useState({
@@ -174,16 +177,16 @@ const ProfilePage = () => {
                                 onChange={handleProfileChange}
                             />
                         </div>
-
                         <div className="form-group-page">
-                            <label>Phone Number</label>
-                            <input
-                                type="tel"
-                                name="phone"
-                                value={profile.phone}
-                                onChange={handleProfileChange}
-                            />
-                        </div>
+  <label>Phone Number</label>
+  <PhoneInput
+    country={'az'}
+    value={profile.phone}
+    onChange={phone => setProfile(prev => ({ ...prev, phone }))}
+    inputStyle={{ width: '100%' }}
+  />
+</div>
+
 
                         <button type="submit" className="save-button-page">Save Changes</button>
                         <button type="button" className="password-button-page" onClick={() => setIsPasswordModalOpen(true)}>
