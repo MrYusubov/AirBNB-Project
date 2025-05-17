@@ -37,35 +37,57 @@ namespace AirBnB.Server.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteHouse(int id)
         {
-            var house = await _context.House.FindAsync(id);
-            if (house == null)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+    
+            try
             {
-                return NotFound();
-            }
+                var house = await _context.House
+                    .Include(h => h.Owner)
+                    .Include(h => h.Reviews)
+                    .Include(h => h.Favorites)
+                    .Include(h => h.Bookings)
+                    .FirstOrDefaultAsync(h => h.Id == id);
 
-            _context.House.Remove(house);
-            var notification = new Notification
-            {
-                ReceiverId = house.OwnerId,
-                Title="Delete",
-                Message="Your house deleted by admin."
-            };
-            await _context.Notifications.AddAsync(notification);
-            await _context.SaveChangesAsync();
-            if (house.Owner != null && !string.IsNullOrEmpty(house.Owner.Email))
-            {
-                await _emailService.SendEmailAsync(
-                    house.Owner.Email,
-                    "House Delete",
-                    $"Hello, {house.Owner.UserName}, your home: {house.Title} is deleted by Admin!"
-                );
+                if (house == null) return NotFound();
+
+                var notification = new Notification
+                {
+                    ReceiverId = house.OwnerId,
+                    Title = "Delete",
+                    Message = "Your house deleted by admin."
+                };
+                await _context.Notifications.AddAsync(notification);
+
+                if (house.Owner != null && !string.IsNullOrEmpty(house.Owner.Email))
+                {
+                    try
+                    {
+                        await _emailService.SendEmailAsync(
+                            house.Owner.Email,
+                            "House Delete",
+                            $"Hello, {house.Owner.UserName}, your home: {house.Title} is deleted by Admin!"
+                        );
+                    }
+                    catch (Exception emailEx)
+                    {
+                        Console.WriteLine($"Email sending failed: {emailEx.Message}");
+                    }
+                }
+
+                _context.House.Remove(house);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return NoContent();
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest();
+                await transaction.RollbackAsync();
+                Console.WriteLine($"Error deleting house: {ex}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-            return NoContent();
         }
+
 
         [HttpPatch("{id}/confirm")]
         [Authorize(Roles = "Admin")]

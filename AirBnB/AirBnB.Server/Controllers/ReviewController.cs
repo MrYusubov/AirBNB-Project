@@ -47,4 +47,12 @@ public class ReviewController : ControllerBase
 
         return Ok(reviews);
     }
+    
+    [HttpGet("count/{houseId}")]
+    public async Task<IActionResult> GetReviewCountForHouse(int houseId)
+    {
+        var count = await _context.Review.CountAsync(r => r.HouseId == houseId);
+        return Ok(count);
+    }
+
 }

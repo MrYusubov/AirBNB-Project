@@ -85,13 +85,24 @@ function Card({ card, isAdmin }) {
     e.preventDefault();
     e.stopPropagation();
     try {
-      await axios.delete(`https://localhost:7149/api/Admin/${card.id}`, {
+      const response = await axios.delete(`https://localhost:7149/api/Admin/${card.id}`, {
         withCredentials: true
       });
-      window.location.reload();
+      
+      if (response.status === 204) {
+        window.location.reload();
+      } else {
+        alert(`Delete operation returned status: ${response.status}`);
+      }
     } catch (error) {
       console.error("Delete failed:", error);
-      alert("Delete failed. Are you logged in as admin?");
+      if (error.response) {
+        alert(`Delete failed (${error.response.status}): ${error.response.data}`);
+      } else if (error.request) {
+        alert("Delete failed: No response from server");
+      } else {
+        alert(`Delete failed: ${error.message}`);
+      }
     }
   };
 

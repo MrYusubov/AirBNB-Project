@@ -17,6 +17,21 @@ const House = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalImageIndex, setModalImageIndex] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
+
+  useEffect(() => {
+    const fetchReviewCount = async () => {
+      try {
+        const response = await axios.get(`https://localhost:7149/api/Review/count/${id}`);
+        setReviewCount(response.data);
+      } catch (err) {
+        console.error("Failed to fetch review count:", err);
+      }
+    };
+
+    fetchReviewCount();
+  }, [id]);
+
 
   const navigate = useNavigate();
 
@@ -170,18 +185,12 @@ const House = () => {
             <div className="property-details">
               <div className="property-highlights">
                 <h2>Entire {house.category?.name || 'property'} in {house.location.split(',')[0]}</h2>
-                <p className="property-meta">
-                  {house.roomCount} guest{house.roomCount !== 1 ? 's' : ''} ·
-                  {house.roomCount} bedroom{house.roomCount !== 1 ? 's' : ''} ·
-                  {house.roomCount} bed{house.roomCount !== 1 ? 's' : ''} ·
-                  1 bath
-                </p>
               </div>
 
               <div className="rating-host-section">
                 <div className="rating-badge">
                   <FaStar className="star-icon" />
-                  <span>{house.rating} · 130 reviews</span>
+                  <span>{parseFloat(house.rating).toFixed(1)} · {reviewCount} reviews</span>
                 </div>
 
                 <div className="host-info">
@@ -201,8 +210,9 @@ const House = () => {
             </div>
 
             <div className="house-info">
+              <h2>About House</h2>
               <p className="description">{house.description}</p>
-              <p className="price">${house.pricePerNight} / night</p>
+              <p className="price">${house.pricePerNight} / Night</p>
             </div>
           </div>
         </div>

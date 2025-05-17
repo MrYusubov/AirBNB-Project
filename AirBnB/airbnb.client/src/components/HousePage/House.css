@@ -168,6 +168,7 @@
   }
   
   .description {
+    padding-top: 0.8em;
     font-size: 16px;
     line-height: 24px;
     margin-bottom: 16px;

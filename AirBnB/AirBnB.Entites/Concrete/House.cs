@@ -39,6 +39,7 @@ namespace AirBnB.Entites.Concrete
         public double Longitude { get; set; }
 
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+        public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
         public ICollection<DynamicPricing> DynamicPricings { get; set; } = new List<DynamicPricing>();
 

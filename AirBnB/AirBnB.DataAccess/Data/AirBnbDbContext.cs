@@ -31,7 +31,25 @@ namespace AirBnB.DataAccess.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
+            modelBuilder.Entity<House>()
+                .HasMany<Review>(h => h.Reviews)
+                .WithOne(r => r.House)
+                .HasForeignKey(r => r.HouseId)
+                .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<House>()
+                .HasMany<Favorite>(h => h.Favorites)
+                .WithOne(f => f.House)
+                .HasForeignKey(f => f.HouseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<House>()
+                .HasMany<Booking>(h => h.Bookings)
+                .WithOne(b => b.House)
+                .HasForeignKey(b => b.HouseId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
             modelBuilder.Entity<House>()
                 .Property(h => h.ImageUrl)
                 .HasConversion(
