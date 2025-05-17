@@ -317,3 +317,11 @@
   color: gray;
 }
 
+
+
+.no-results-message{
+  text-align: center;
+  padding-top: 15em;
+  font-size: large;
+  font-style: italic;
+}

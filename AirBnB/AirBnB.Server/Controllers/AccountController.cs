@@ -203,7 +203,41 @@ namespace AirBnB.Server.Controllers
 
             return BadRequest(new { message = "Invalid verification code" });
         }
+        
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null) return BadRequest(new { message = "User not found" });
 
+            user.EmailConfirmationToken = new Random().Next(100000, 999999).ToString();
+            await _userManager.UpdateAsync(user);
 
+            var subject = "Your password reset code";
+            var body = $"<h1>Your reset code is: {user.EmailConfirmationToken}</h1>";
+            await _emailService.SendEmailAsync(user.Email, subject, body);
+
+            return Ok(new { message = "Password reset code sent", email = user.Email });
+        }
+        
+        
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null) return BadRequest(new { message = "User not found" });
+
+            if (user.EmailConfirmationToken != model.Code)
+                return BadRequest(new { message = "Invalid verification code" });
+
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, resetToken, model.NewPassword);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            return Ok(new { message = "Password has been reset successfully" });
+        }
+        
     }
 }

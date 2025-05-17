@@ -2,13 +2,23 @@ import React, { useEffect, useState } from "react";
 import Header from "../Header";
 import Cards from "../../Cards/Cards";
 import axios from "axios";
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    Tooltip,
+    CartesianGrid,
+    ResponsiveContainer
+} from "recharts";
 import "./YourHome.css";
+import HouseGrid from "./HouseGrid";
 
 function YourHome() {
     const [houses, setHouses] = useState([]);
     const [bookings, setBookings] = useState([]);
     const [confirmedBookings, setConfirmedBookings] = useState([]);
+    const [monthOffset, setMonthOffset] = useState(0);
 
     const userId = localStorage.getItem("userId");
 
@@ -55,16 +65,23 @@ function YourHome() {
     };
 
     const prepareChartData = () => {
-        const today = new Date();
-        const dates = Array.from({ length: 31 }, (_, i) => {
-            const date = new Date(today);
-            date.setDate(today.getDate() - (i - 2));
+        const baseDate = new Date();
+        baseDate.setMonth(baseDate.getMonth() + monthOffset);
+
+        const year = baseDate.getFullYear();
+        const month = baseDate.getMonth();
+
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const dates = Array.from({ length: daysInMonth }, (_, i) => {
+            const date = new Date(year, month, i + 2);
             return date.toISOString().split("T")[0];
-        }).reverse();
+        });
 
         const counts = dates.map(date => ({
             date,
-            reservations: confirmedBookings.filter(b => new Date(b.startDate).toISOString().split("T")[0] === date).length
+            reservations: confirmedBookings.filter(b =>
+                new Date(b.startDate).toISOString().split("T")[0] === date
+            ).length
         }));
 
         return counts;
@@ -72,19 +89,27 @@ function YourHome() {
 
     const chartData = prepareChartData();
 
+    const currentMonthLabel = new Date(new Date().setMonth(new Date().getMonth() + monthOffset))
+        .toLocaleString('default', { month: 'long', year: 'numeric' });
+
     return (
         <div>
             <Header />
             <div className="your-home-page">
                 <div className="cards-section">
                     <h2 className="history-title">My Houses</h2>
+                    <HouseGrid houses={houses} refreshHouses={fetchHouses} />
                     <Cards list={houses} />
                 </div>
 
                 <div className="reservations-section">
                     <div className="reservations-panel">
                         <h3>Reservations</h3>
-                        {bookings
+                        {bookings.filter(booking => new Date(booking.startDate) > new Date()).length === 0 ? (
+                            <p style={{ padding: "10px", color: "#666", fontStyle: "italic" }}>
+                                There are currently no active reservations.
+                            </p>
+                        ) : (bookings
                             .filter(booking => new Date(booking.startDate) > new Date())
                             .map((booking) => (
                                 <div className="reservation-card" key={booking.id}>
@@ -99,33 +124,32 @@ function YourHome() {
                                         />
                                         <div>
                                             <p><strong>{booking.guest.userName}</strong></p>
-
                                             <p>
-                                                Home:{" "}
-                                                <a className="house-link">
-                                                    {booking.house.title}
-                                                </a>
+                                                Home: <a className="house-link">{booking.house.title}</a>
                                             </p>
-
                                             <p>Date: {booking.startDate.split("T")[0]} → {booking.endDate.split("T")[0]}</p>
                                             <p>Total Price: <strong>${booking.totalPrice}</strong></p>
                                         </div>
                                     </div>
-
                                     <div className="reservation-actions">
                                         {!booking.isConfirmed && (
-                                            <>
-                                                <button className="confirm-btn" onClick={() => handleConfirm(booking.id)}>Confirm</button>
-                                            </>
+                                            <button className="confirm-btn" onClick={() => handleConfirm(booking.id)}>Confirm</button>
                                         )}
                                         <button className="decline-btn" onClick={() => handleDecline(booking.id)}>Decline</button>
                                     </div>
                                 </div>
-                            ))}
+                            )))}
                     </div>
 
                     <div className="reservations-chart">
-                        <h3>Reservation Chart (Last 30 Days)</h3>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                            <h3>Reservation Chart - {currentMonthLabel}</h3>
+                            <div className="month-buttons">
+                                <button className="month-button" onClick={() => setMonthOffset(prev => prev - 1)}>Previous Month</button>
+                                <button className="month-button" onClick={() => setMonthOffset(prev => prev + 1)}>Next Month</button>
+                            </div>
+                        </div>
+
                         <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={chartData}>
                                 <CartesianGrid strokeDasharray="3 3" />

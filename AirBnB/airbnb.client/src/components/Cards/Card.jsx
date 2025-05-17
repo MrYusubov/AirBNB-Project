@@ -114,6 +114,7 @@ function Card({ card, isAdmin }) {
         withCredentials: true
       });
       setIsConfirmed(true);
+      window.location.reload();
     } catch (error) {
       console.error("Confirm failed:", error);
       alert("Confirm failed. Are you logged in as admin?");

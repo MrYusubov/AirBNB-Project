@@ -56,11 +56,12 @@
     height: 100%;
   }
 
-  .save-button {
+  .house-save-button {
     display: flex;
     align-items: center;
     gap: 8px;
     background: none;
+    margin-right: 7em;
     border: none;
     font-size: 14px;
     font-weight: 600;
@@ -173,7 +174,10 @@
     line-height: 24px;
     margin-bottom: 16px;
   }
-  
+  .adress{
+    padding-top: 1.5rem;
+    font-weight: bold;
+  }
   .price {
     font-size: 18px;
     font-weight: 600;
@@ -290,7 +294,7 @@
     z-index: 100;
     margin-top: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    left: -53vh;
+    left: -60vh;
   }
   
   .reserve-button {

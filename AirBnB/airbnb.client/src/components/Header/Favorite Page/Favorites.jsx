@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Card from "../../Cards/card";
+import Card from "../../Cards/Card";
 import "../styles.css";
 import Header from "../Header";
 
@@ -63,15 +63,18 @@ function Favorites() {
 
     if (favoriteHouses.length === 0) {
         return (
-            <div className="no-favorites-message">
-                You haven't saved any houses to your favorites yet.
+            <div>
+                <Header />
+                <div className="no-favorites-message">
+                    You haven't saved any houses to your favorites yet.
+                </div>
             </div>
         );
     }
 
     return (
         <div>
-            <Header/>
+            <Header />
             <div className="favorites-container">
                 <h1 className="favorites-title">Your Saved Houses</h1>
                 <div className="cards-flex">

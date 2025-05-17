@@ -5,6 +5,7 @@ using AirBnB.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AirBnB.Server.Controllers
 {
@@ -181,16 +182,64 @@ namespace AirBnB.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteHouse(int id)
         {
-            var house = await _context.House.FindAsync(id);
-            if (house == null)
-            {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    
+            var house = await _context.House
+                .Include(h => h.Bookings)
+                .Include(h => h.Reviews)
+                .FirstOrDefaultAsync(h => h.Id == id);
+    
+            if (house == null) 
                 return NotFound();
+    
+            if (house.OwnerId != userId && !User.IsInRole("Admin")) 
+                return Forbid();
+    
+            if (house.Bookings?.Any() == true)
+            {
+                _context.Booking.RemoveRange(house.Bookings);
             }
-
+    
+            if (house.Reviews?.Any() == true)
+            {
+                _context.Review.RemoveRange(house.Reviews);
+            }
+    
             _context.House.Remove(house);
+    
+            try
+            {
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine($"Error deleting house: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                }
+        
+                return StatusCode(500, "An Error occured while deleting house");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error: {ex.Message}");
+                return StatusCode(500, "Erroor occured while deleting house");
+            }
+        }
+        
+        [HttpPatch("{id}/UpdatePrice")]
+        public async Task<ActionResult> UpdatePrice(int id, [FromBody] PriceUpdateDto dto)
+        {
+            var house = await _context.House.FindAsync(id);
+            if (house == null) return NotFound();
+
+            house.PricePerNight = dto.NewPrice;
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
     }
 }

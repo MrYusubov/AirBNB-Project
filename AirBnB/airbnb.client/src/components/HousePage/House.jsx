@@ -124,7 +124,7 @@ const House = () => {
           <div className="house-content">
             <div className="house-header">
               <h1>{house.title}</h1>
-              <button onClick={toggleFavorite} className="save-button">
+              <button onClick={toggleFavorite} className="house-save-button">
                 {isSaved ? (
                   <>
                     <FaBookmark className="saved-icon" />
@@ -213,6 +213,8 @@ const House = () => {
               <h2>About House</h2>
               <p className="description">{house.description}</p>
               <p className="price">${house.pricePerNight} / Night</p>
+              <h2><br />Adress</h2>
+              <p className='adress'>{house.adress}</p>
             </div>
           </div>
         </div>

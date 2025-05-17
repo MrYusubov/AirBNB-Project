@@ -60,8 +60,11 @@ function SearchResults() {
 
     if (houses.length === 0) {
         return (
-            <div className="no-results-message">
-                No houses found in {locationQuery}
+            <div>
+                <Header />
+                <div className="no-results-message">
+                    No houses found in {locationQuery}
+                </div>
             </div>
         );
     }
@@ -86,7 +89,7 @@ function SearchResults() {
                     <h2 className="search-results-title">Houses in {locationQuery}</h2>
 
 
-                    <Cards list={houses}/>
+                    <Cards list={houses} />
                 </div>
 
 

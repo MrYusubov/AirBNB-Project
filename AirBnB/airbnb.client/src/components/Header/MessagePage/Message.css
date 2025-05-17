@@ -310,3 +310,18 @@
 .send-button:hover {
     background-color: #2563eb;
 }
+
+
+.search-container {
+    padding: 10px;
+  }
+  
+  .user-search-input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 14px;
+  }
+  

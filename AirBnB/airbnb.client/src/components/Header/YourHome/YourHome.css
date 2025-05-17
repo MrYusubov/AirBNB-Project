@@ -120,3 +120,36 @@
 .house-link:hover {
     color: #e04345;
 }
+
+
+
+.month-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.month-button {
+    background-color: #ff385c;
+    color: white;
+    border: none;
+    margin-bottom: 1.5rem;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.month-button:hover {
+    background-color: #e03150;
+    transform: translateY(-1px);
+}
+
+.month-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+

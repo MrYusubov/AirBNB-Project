@@ -209,3 +209,32 @@ body {
 .container.active .toggle-right {
     transform: translateX(200%);
 }
+
+
+.forgot-modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100vw; height: 100vh;
+    background-color: rgba(0,0,0,0.5);
+    display: flex; justify-content: center; align-items: center;
+  }
+  
+  .forgot-modal-content {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+  }
+  
+  .forgot-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  

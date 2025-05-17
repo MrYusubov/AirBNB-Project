@@ -13,6 +13,13 @@ const Auth = () => {
   const [userEmail, setUserEmail] = useState('');
   const [verificationError, setVerificationError] = useState('');
 
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [resetStep, setResetStep] = useState(1);
+  const [resetCode, setResetCode] = useState('');
+  const [newResetPassword, setNewResetPassword] = useState('');
+  const [resetMessage, setResetMessage] = useState('');
+
   const navigate = useNavigate();
 
   const [registerData, setRegisterData] = useState({
@@ -68,7 +75,6 @@ const Auth = () => {
       alert(error.response?.data?.message || "Registration failed");
     }
   };
-
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -136,7 +142,10 @@ const Auth = () => {
           <span>Login With Email & Password</span>
           <input type="text" placeholder="Enter Username" name="username" onChange={handleLoginChange} required />
           <input type="password" placeholder="Enter Password" name="password" onChange={handleLoginChange} required />
-          <a href="#">Forget Password?</a>
+          <a href="#" onClick={(e) => {
+            e.preventDefault();
+            setShowForgotPasswordModal(true);
+          }}>Forget Password?</a>
           <button type="submit">Sign In</button>
         </form>
       </div>
@@ -156,6 +165,82 @@ const Auth = () => {
           </div>
         </div>
       </div>
+
+      {showForgotPasswordModal && (
+        <div className="forgot_modal">
+          <div className="forgot-modal-content">
+            <span className="forgot-close" onClick={() => {
+              setShowForgotPasswordModal(false);
+              setResetStep(1);
+              setForgotEmail('');
+              setResetCode('');
+              setNewResetPassword('');
+              setResetMessage('');
+            }}>X</span>
+
+            {resetStep === 1 && (
+              <>
+                <h2>Forgot Password</h2>
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                />
+                <button onClick={async () => {
+                  try {
+                    const response = await axios.post(`${url}/api/Account/forgot-password`, { email: forgotEmail });
+                    setResetMessage(response.data.message);
+                    setResetStep(2);
+                  } catch (error) {
+                    setResetMessage(error.response?.data?.message || "Failed to send reset code.");
+                  }
+                }}>Send Code</button>
+              </>
+            )}
+
+            {resetStep === 2 && (
+              <>
+                <h2>Reset Password</h2>
+                <input
+                  type="text"
+                  placeholder="Enter code"
+                  value={resetCode}
+                  onChange={(e) => setResetCode(e.target.value)}
+                />
+                <input
+                  type="password"
+                  placeholder="Enter new password"
+                  value={newResetPassword}
+                  onChange={(e) => setNewResetPassword(e.target.value)}
+                />
+                <button onClick={async () => {
+                  try {
+                    const response = await axios.post(`${url}/api/Account/reset-password`, {
+                      email: forgotEmail,
+                      code: resetCode,
+                      newPassword: newResetPassword
+                    });
+                    setResetMessage(response.data.message);
+                    setResetStep(3);
+                  } catch (error) {
+                    setResetMessage(error.response?.data?.message || "Failed to reset password.");
+                  }
+                }}>Reset Password</button>
+              </>
+            )}
+
+            {resetStep === 3 && (
+              <>
+                <h3>Password successfully changed!</h3>
+                <button onClick={() => setShowForgotPasswordModal(false)}>Back to Login</button>
+              </>
+            )}
+
+            {resetMessage && <p>{resetMessage}</p>}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

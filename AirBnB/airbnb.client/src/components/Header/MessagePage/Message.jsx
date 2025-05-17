@@ -17,6 +17,7 @@ const api = axios.create({
 const Chat = () => {
   const [activeUser, setActiveUser] = useState(null);
   const [message, setMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [messages, setMessages] = useState([]);
   const [users, setUsers] = useState([]);
   const [currentUserId, setCurrentUserId] = useState('');
@@ -192,29 +193,41 @@ const Chat = () => {
           <div className="sidebar-header">
             <h1 className="sidebar-title">Messages</h1>
           </div>
-          <div className="user-list">
-            {users.map(user => (
-              <div
-                key={user.id}
-                className={`user-item ${activeUser === user.id ? 'active-user' : ''}`}
-                onClick={() => setActiveUser(user.id)}
-              >
-                <div className="avatar-container">
-                  <img src={user.avatar} className="user-avatar"
-                  />
-                  <BsCircleFill
-                    className={`status-indicator ${user.status === 'online' ? 'online' : 'offline'}`}
-                  />
-                </div>
-                <div className="user-info">
-                  <h3 className="user-name">{user.name}</h3>
-                  <p className="user-status">
-                    {user.status === 'online' ? 'Online' : 'Offline'}
-                  </p>
-                </div>
-              </div>
-            ))}
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search by username..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="user-search-input"
+            />
           </div>
+
+          <div className="user-list">
+            {users
+              .filter(user => user.name.toLowerCase().includes(searchTerm.toLowerCase()))
+              .map(user => (
+                <div
+                  key={user.id}
+                  className={`user-item ${activeUser === user.id ? 'active-user' : ''}`}
+                  onClick={() => setActiveUser(user.id)}
+                >
+                  <div className="avatar-container">
+                    <img src={user.avatar} className="user-avatar" />
+                    <BsCircleFill
+                      className={`status-indicator ${user.status === 'online' ? 'online' : 'offline'}`}
+                    />
+                  </div>
+                  <div className="user-info">
+                    <h3 className="user-name">{user.name}</h3>
+                    <p className="user-status">
+                      {user.status === 'online' ? 'Online' : 'Offline'}
+                    </p>
+                  </div>
+                </div>
+              ))}
+          </div>
+
         </div>
 
         {activeUser && (

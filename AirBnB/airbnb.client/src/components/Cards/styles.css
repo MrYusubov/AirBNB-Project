@@ -1,7 +1,7 @@
 .cards-flex {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 20px;
   padding: 1rem 3rem;
   width: 100%;
