@@ -38,6 +38,7 @@ const HouseForm = () => {
     iconSize: [38, 38],
     iconAnchor: [19, 38],
   });
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (addressRef.current && !addressRef.current.contains(event.target)) {
@@ -64,7 +65,6 @@ const HouseForm = () => {
     });
   }, [form.maxPhotos]);
 
-
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -72,10 +72,9 @@ const HouseForm = () => {
         if (response.ok) {
           const data = await response.json();
           setCategories(data);
-        } else throw new Error("Failed to fetch categories");
+        }
       } catch (error) {
-        console.error("Error fetching categories:", error);
-        alert("Error loading categories. Please try again later.");
+        // Error handling removed as per requirements
       }
     };
 
@@ -97,7 +96,6 @@ const HouseForm = () => {
     }
   };
 
-
   const uploadImageToCloudinary = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -112,12 +110,12 @@ const HouseForm = () => {
           body: formData,
         }
       );
-      if (!response.ok) throw new Error("Image upload failed");
+      if (!response.ok) return;
 
       const data = await response.json();
       return data.public_id;
     } catch (error) {
-      console.error("Error uploading image:", error);
+      return;
     }
   };
 
@@ -125,17 +123,14 @@ const HouseForm = () => {
     e.preventDefault();
 
     if (form.photos.filter(Boolean).length !== parseInt(form.maxPhotos)) {
-      alert(`Please upload exactly ${form.maxPhotos} photos`);
       return;
     }
 
     if (!form.categoryId) {
-      alert("Please select a category");
       return;
     }
 
     if (form.latitude === null || form.longitude === null) {
-      alert("Please select a location from map");
       return;
     }
 
@@ -149,13 +144,13 @@ const HouseForm = () => {
       for (let i = 0; i < form.photos.length; i++) {
         if (form.photos[i]) {
           const url = await uploadImageToCloudinary(form.photos[i]);
-          imageUrls.push(url);
+          if (url) imageUrls.push(url);
           setUploadProgress(Math.round(((i + 1) / totalPhotos) * 100));
         }
       }
       const userId = localStorage.getItem('userId');
       if (!userId) {
-        throw new Error('User not authenticated');
+        return;
       }
       const houseData = {
         ...form,
@@ -175,7 +170,6 @@ const HouseForm = () => {
       });
 
       if (response.ok) {
-        alert("Home added successfully!");
         setForm({
           title: "",
           description: "",
@@ -190,17 +184,12 @@ const HouseForm = () => {
           longitude: null,
         });
         setUploadProgress(0);
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to add home");
       }
-    } catch (error) {
-      console.error("Error:", error);
-      alert(error.message || "An error occurred while adding the home");
     } finally {
       setIsLoading(false);
     }
   };
+
   const userLocationIcon = new L.Icon({
     iconUrl: "/ownlocation.png",
     iconSize: [40, 40],
@@ -212,7 +201,6 @@ const HouseForm = () => {
     newPhotos[index] = file;
     setForm((prev) => ({ ...prev, photos: newPhotos }));
   };
-
 
   const removePhoto = (index) => {
     const newPhotos = [...form.photos];
@@ -421,7 +409,6 @@ const HouseForm = () => {
             </div>
           </div>
 
-
           {uploadProgress > 0 && uploadProgress < 100 && (
             <div className="upload-progress">
               <div className="progress-bar" style={{ width: `${uploadProgress}%` }}>
@@ -453,14 +440,8 @@ const HouseForm = () => {
                           lat: position.coords.latitude,
                           lng: position.coords.longitude,
                         });
-                      },
-                      (error) => {
-                        console.error(error);
-                        alert("Failed to get your location");
                       }
                     );
-                  } else {
-                    alert("Geolocation is not supported by your browser");
                   }
                 }}
                 style={{
@@ -489,7 +470,6 @@ const HouseForm = () => {
                 <Marker position={[userLocation.lat, userLocation.lng]} icon={userLocationIcon} />
               )}
             </MapContainer>
-
           </div>
         )}
       </div>

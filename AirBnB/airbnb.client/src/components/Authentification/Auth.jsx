@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Auth.css';
 import { FaGoogle } from 'react-icons/fa';
 import axios from 'axios';
@@ -20,6 +20,10 @@ const Auth = () => {
   const [newResetPassword, setNewResetPassword] = useState('');
   const [resetMessage, setResetMessage] = useState('');
 
+  const [passwordError, setPasswordError] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [registerError, setRegisterError] = useState('');
+
   const navigate = useNavigate();
 
   const [registerData, setRegisterData] = useState({
@@ -37,7 +41,13 @@ const Auth = () => {
   const toggleActive = () => setIsActive(!isActive);
 
   const handleRegisterChange = (e) => {
-    setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setRegisterData({ ...registerData, [name]: value });
+
+    if (name === 'password') {
+      const valid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{6,}$/.test(value);
+      setPasswordError(valid ? '' : 'Password must contain uppercase, lowercase, and special character.');
+    }
   };
 
   const handleLoginChange = (e) => {
@@ -52,7 +62,6 @@ const Auth = () => {
         code: verificationCode
       });
 
-      alert(response.data.message);
       setIsActive(false);
     } catch (error) {
       setVerificationError(error.response?.data?.message || "Verification failed");
@@ -61,6 +70,8 @@ const Auth = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    if (passwordError) return;
+
     try {
       const response = await axios.post(url + '/api/Account/register', {
         username: registerData.username,
@@ -68,11 +79,10 @@ const Auth = () => {
         password: registerData.password
       }, { headers: { "Content-Type": "application/json" }, withCredentials: true });
 
-      alert(response.data.message);
       setUserEmail(response.data.email);
       setStep(2);
     } catch (error) {
-      alert(error.response?.data?.message || "Registration failed");
+      setRegisterError(error.response?.data?.message || "Registration failed");
     }
   };
 
@@ -100,8 +110,7 @@ const Auth = () => {
 
       navigate('/');
     } catch (error) {
-      alert(error.response?.data?.message || "Login failed");
-      console.error(error.response?.data);
+      setLoginError(error.response?.data?.message || "Login failed");
     }
   };
 
@@ -115,6 +124,8 @@ const Auth = () => {
               <input type="text" placeholder="Full Name" name="username" onChange={handleRegisterChange} required />
               <input type="email" placeholder="Enter E-mail" name="email" onChange={handleRegisterChange} required />
               <input type="password" placeholder="Enter Password" name="password" onChange={handleRegisterChange} required />
+              {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>}
+              {registerError && <p style={{ color: 'red' }}>{registerError}</p>}
             </>
           ) : (
             <>
@@ -142,6 +153,7 @@ const Auth = () => {
           <span>Login With Email & Password</span>
           <input type="text" placeholder="Enter Username" name="username" onChange={handleLoginChange} required />
           <input type="password" placeholder="Enter Password" name="password" onChange={handleLoginChange} required />
+          {loginError && <p style={{ color: 'red' }}>{loginError}</p>}
           <a href="#" onClick={(e) => {
             e.preventDefault();
             setShowForgotPasswordModal(true);
@@ -189,7 +201,7 @@ const Auth = () => {
                 />
                 <button onClick={async () => {
                   try {
-                    const response = await axios.post(`${url}/api/Account/forgot-password`, { email: forgotEmail });
+                    const response = await axios.post(`${url}/api/Account/forgot-password`, { email: forgotEmail },{withCredentials:true});
                     setResetMessage(response.data.message);
                     setResetStep(2);
                   } catch (error) {
@@ -214,19 +226,50 @@ const Auth = () => {
                   value={newResetPassword}
                   onChange={(e) => setNewResetPassword(e.target.value)}
                 />
-                <button onClick={async () => {
-                  try {
-                    const response = await axios.post(`${url}/api/Account/reset-password`, {
-                      email: forgotEmail,
-                      code: resetCode,
-                      newPassword: newResetPassword
-                    });
-                    setResetMessage(response.data.message);
-                    setResetStep(3);
-                  } catch (error) {
-                    setResetMessage(error.response?.data?.message || "Failed to reset password.");
+
+                <div style={{ fontSize: '13px', marginBottom: '10px' }}>
+                  <p style={{ color: newResetPassword.length >= 6 ? 'green' : 'red' }}>
+                    • At least 6 characters
+                  </p>
+                  <p style={{ color: /\d/.test(newResetPassword) ? 'green' : 'red' }}>
+                    • At least one number
+                  </p>
+                  <p style={{ color: /[a-z]/.test(newResetPassword) ? 'green' : 'red' }}>
+                    • At least one lowercase letter
+                  </p>
+                  <p style={{ color: /[A-Z]/.test(newResetPassword) ? 'green' : 'red' }}>
+                    • At least one uppercase letter
+                  </p>
+                  <p style={{ color: /[!@#$%^&*(),.?"_:{}|<>]/.test(newResetPassword) ? 'green' : 'red' }}>
+                    • At least one special character
+                  </p>
+                </div>
+
+                <button
+                  disabled={
+                    newResetPassword.length < 6 ||
+                    !/\d/.test(newResetPassword) ||
+                    !/[a-z]/.test(newResetPassword) ||
+                    !/[A-Z]/.test(newResetPassword) ||
+                    !/[!@#$%_^&*(),.?":{}|<>]/.test(newResetPassword)
                   }
-                }}>Reset Password</button>
+                  onClick={async () => {
+                    try {
+                      const response = await axios.post(`${url}/api/Account/reset-password`, {
+                        email: forgotEmail,
+                        code: resetCode,
+                        newPassword: newResetPassword,
+                      },{withCredentials:true});
+                      setResetMessage('Password successfully changed!');
+                      setResetStep(3);
+                    } catch (error) {
+                      setResetMessage(error.response?.data?.message || "Failed to reset password.");
+                    }
+                  }}
+                >
+                  Reset Password
+                </button>
+
               </>
             )}
 

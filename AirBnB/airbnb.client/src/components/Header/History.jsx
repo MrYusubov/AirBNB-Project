@@ -48,40 +48,47 @@ function History() {
         <div>
             <Header />
             <h1 className="history-title">Your Purchase History</h1>
-            <div className="cards-flex">
-                {bookings.map((booking, index) => (
-                    <div key={index} className="history-card">
-                        <Card card={booking.house} />
-                        <div style={{ marginTop: "10px", textAlign: "center" }}>
-                            <button
-                                onClick={() => openReviewModal(booking.house.id)}
-                                style={{
-                                    backgroundColor: "#ff385c",
-                                    color: "white",
-                                    border: "none",
-                                    padding: "10px 20px",
-                                    borderRadius: "8px",
-                                    cursor: "pointer",
-                                    fontWeight: "600",
-                                    fontSize: "1rem",
-                                    transition: "0.3s",
-                                }}
-                            >
-                                Write Review
-                            </button>
+            {bookings.length === 0 ? (
+                <p style={{ textAlign: "center", fontSize: "1.2rem", marginTop: "10rem" }}>
+                    You haven't purchase history
+                </p>
+            ) : (
+                <div className="cards-flex">
+                    {bookings.map((booking, index) => (
+                        <div key={index} className="history-card">
+                            <Card card={booking.house} />
+                            <div style={{ marginTop: "10px", textAlign: "center" }}>
+                                <button
+                                    onClick={() => openReviewModal(booking.house.id)}
+                                    style={{
+                                        backgroundColor: "#ff385c",
+                                        color: "white",
+                                        border: "none",
+                                        padding: "10px 20px",
+                                        borderRadius: "8px",
+                                        cursor: "pointer",
+                                        fontWeight: "600",
+                                        fontSize: "1rem",
+                                        transition: "0.3s",
+                                    }}
+                                >
+                                    Write Review
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                ))}
-
-                <ReviewModal
-                    open={isModalOpen}
-                    handleClose={closeReviewModal}
-                    houseId={selectedHouseId}
-                    onReviewPosted={handleReviewPosted}
-                />
-            </div>
+                    ))}
+    
+                    <ReviewModal
+                        open={isModalOpen}
+                        handleClose={closeReviewModal}
+                        houseId={selectedHouseId}
+                        onReviewPosted={handleReviewPosted}
+                    />
+                </div>
+            )}
         </div>
     );
+    
 }
 
 export default History;

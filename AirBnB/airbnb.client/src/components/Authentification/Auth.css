@@ -211,30 +211,44 @@ body {
 }
 
 
-.forgot-modal {
+/* Add this to your Auth.css */
+.forgot_modal {
     position: fixed;
-    z-index: 1000;
-    left: 0; top: 0;
-    width: 100vw; height: 100vh;
-    background-color: rgba(0,0,0,0.5);
-    display: flex; justify-content: center; align-items: center;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.3s ease;
   }
   
   .forgot-modal-content {
-    background-color: #fff;
-    padding: 2rem;
+    background-color: white;
+    padding: 30px;
     border-radius: 10px;
     width: 90%;
     max-width: 400px;
-    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     position: relative;
   }
   
   .forgot-close {
     position: absolute;
-    top: 0.5rem;
-    right: 1rem;
-    font-size: 1.5rem;
+    top: 15px;
+    right: 15px;
     cursor: pointer;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .forgot-close:hover {
+    color: #000;
   }
   

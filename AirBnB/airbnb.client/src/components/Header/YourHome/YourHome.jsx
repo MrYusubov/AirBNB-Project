@@ -99,7 +99,9 @@ function YourHome() {
                 <div className="cards-section">
                     <h2 className="history-title">My Houses</h2>
                     <HouseGrid houses={houses} refreshHouses={fetchHouses} />
+                    <div style={{ marginBottom: "40px" }} />
                     <Cards list={houses} />
+
                 </div>
 
                 <div className="reservations-section">

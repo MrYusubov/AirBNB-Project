@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
-
 const ProfilePage = () => {
     const [profile, setProfile] = useState({
         fullName: '',
@@ -23,6 +22,18 @@ const ProfilePage = () => {
         newPassword: '',
         confirmPassword: ''
     });
+    const [errors, setErrors] = useState({
+        profile: '',
+        password: '',
+        passwordRequirements: {
+            length: false,
+            uppercase: false,
+            lowercase: false,
+            number: false,
+            specialChar: false
+        }
+    });
+    const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
         axios.get('https://localhost:7149/api/Account/profile', {
@@ -39,7 +50,7 @@ const ProfilePage = () => {
                         : '/public/logo/user.png'
                 });
             })
-            .catch(err => console.error('Failed to fetch profile:', err));
+            .catch(err => setErrors({...errors, profile: 'Failed to fetch profile data'}));
     }, []);
 
     const handleProfileChange = (e) => {
@@ -50,64 +61,88 @@ const ProfilePage = () => {
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                setErrors({...errors, profile: 'Image size should be less than 5MB'});
+                return;
+            }
             setSelectedAvatarFile(file);
             const reader = new FileReader();
             reader.onloadend = () => setAvatarPreview(reader.result);
             reader.readAsDataURL(file);
+            setErrors({...errors, profile: ''});
         }
     };
 
+    const validatePassword = (password) => {
+        const requirements = {
+            length: password.length >= 6,
+            uppercase: /[A-Z]/.test(password),
+            lowercase: /[a-z]/.test(password),
+            number: /[0-9]/.test(password),
+            specialChar: /[!@#$%^&_*(),.?":{}|<>]/.test(password)
+        };
+        setErrors({...errors, passwordRequirements: requirements});
+        return Object.values(requirements).every(Boolean);
+    };
+
+    const validateEmail = (email) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    };
+    
+
     const handleProfileSubmit = async (e) => {
         e.preventDefault();
-    
+        setErrors({...errors, profile: ''});
+        setSuccessMessage('');
+        if (!validateEmail(profile.email)) {
+            setErrors({...errors, profile: 'Please enter a valid email address'});
+            return;
+        }
         let profilePicturePublicId = null;
-    
+
         if (selectedAvatarFile) {
             const formData = new FormData();
             formData.append("file", selectedAvatarFile);
             formData.append("upload_preset", "airbnb_uploads");
-    
+
             try {
                 const uploadRes = await axios.post("https://api.cloudinary.com/v1_1/djosldcjf/image/upload", formData);
                 profilePicturePublicId = uploadRes.data.public_id;
-            } catch (err) {
-                alert("Image upload failed");
+            } catch {
+                setErrors({...errors, profile: 'Image upload failed'});
                 return;
             }
-        } else {
+        } else if (profile.avatar.includes('cloudinary')) {
             const regex = /upload\/(?:v\d+\/)?([^\.]+)/;
             const match = profile.avatar.match(regex);
-            if (match && match[1]) {
-                profilePicturePublicId = match[1];
-            }
+            profilePicturePublicId = match?.[1] || null;
         }
-    
-        const updateData = {
-            fullName: profile.fullName,
-            email: profile.email,
-            phoneNumber: profile.phone,
-            profilePicture: profilePicturePublicId,
-        };
-    
+
         try {
             await axios.put("https://localhost:7149/api/Account/profile", {
-                username: updateData.fullName,
-                email: updateData.email,
-                phone: updateData.phoneNumber,
-                profilePicture: updateData.profilePicture
+                username: profile.fullName,
+                email: profile.email,
+                phone: profile.phone,
+                profilePicture: profilePicturePublicId
             }, { withCredentials: true });
-            alert("Profile updated successfully");
-        } catch (err) {
-            alert("Update failed");
+            setSuccessMessage('Profile updated successfully');
+        } catch {
+            setErrors({...errors, profile: 'Update failed'});
         }
     };
-    
 
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
+        setErrors({...errors, password: ''});
+
+        if (!validatePassword(password.newPassword)) {
+            setErrors({...errors, password: 'Password does not meet requirements'});
+            return;
+        }
 
         if (password.newPassword !== password.confirmPassword) {
-            alert("New passwords do not match");
+            setErrors({...errors, password: 'New passwords do not match'});
             return;
         }
 
@@ -117,22 +152,29 @@ const ProfilePage = () => {
                 newPassword: password.newPassword
             }, { withCredentials: true });
 
-            alert("Password changed successfully");
+            setSuccessMessage('Password changed successfully');
             setIsPasswordModalOpen(false);
             setPassword({ oldPassword: '', newPassword: '', confirmPassword: '' });
-        } catch (err) {
-            console.error(err);
-            alert("Password change failed");
+        } catch {
+            setErrors({...errors, password: 'Password change failed'});
         }
     };
+
+    const renderPasswordRequirement = (label, condition) => (
+        <li style={{ color: condition ? 'green' : 'red' }}>
+            {condition ? '✓' : '✗'} {label}
+        </li>
+    );
 
     return (
         <div>
             <Header />
             <div className="profile-container-page">
+                {successMessage && <div className="success-message">{successMessage}</div>}
                 <form onSubmit={handleProfileSubmit} className="profile-form-page">
                     <div className="profile-section-page">
                         <h2>Personal Information</h2>
+                        {errors.profile && <div className="error-message">{errors.profile}</div>}
 
                         <div className="avatar-section-page">
                             <div className="avatar-wrapper-page">
@@ -178,15 +220,14 @@ const ProfilePage = () => {
                             />
                         </div>
                         <div className="form-group-page">
-  <label>Phone Number</label>
-  <PhoneInput
-    country={'az'}
-    value={profile.phone}
-    onChange={phone => setProfile(prev => ({ ...prev, phone }))}
-    inputStyle={{ width: '100%' }}
-  />
-</div>
-
+                            <label>Phone Number</label>
+                            <PhoneInput
+                                country={'az'}
+                                value={profile.phone}
+                                onChange={phone => setProfile(prev => ({ ...prev, phone }))}
+                                inputStyle={{ width: '100%' }}
+                            />
+                        </div>
 
                         <button type="submit" className="save-button-page">Save Changes</button>
                         <button type="button" className="password-button-page" onClick={() => setIsPasswordModalOpen(true)}>
@@ -204,30 +245,59 @@ const ProfilePage = () => {
                             <button className="modal-close" onClick={() => setIsPasswordModalOpen(false)}>×</button>
                         </div>
                         <form onSubmit={handlePasswordSubmit}>
-                            <input
-                                type="password"
-                                placeholder="Old Password"
-                                value={password.oldPassword}
-                                onChange={(e) => setPassword({ ...password, oldPassword: e.target.value })}
-                            />
-                            <input
-                                type="password"
-                                placeholder="New Password"
-                                value={password.newPassword}
-                                onChange={(e) => setPassword({ ...password, newPassword: e.target.value })}
-                            />
-                            <input
-                                type="password"
-                                placeholder="Confirm New Password"
-                                value={password.confirmPassword}
-                                onChange={(e) => setPassword({ ...password, confirmPassword: e.target.value })}
-                            />
-                            <button type="submit">Save Password</button>
+                            <div className="form-group-page">
+                                <input
+                                    type="password"
+                                    placeholder="Old Password"
+                                    value={password.oldPassword}
+                                    onChange={(e) => setPassword({ ...password, oldPassword: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            
+                            <div className="form-group-page">
+                                <input
+                                    type="password"
+                                    placeholder="New Password"
+                                    value={password.newPassword}
+                                    onChange={(e) => {
+                                        setPassword({ ...password, newPassword: e.target.value });
+                                        validatePassword(e.target.value);
+                                    }}
+                                    required
+                                />
+                                <ul className="password-requirements">
+                                    {renderPasswordRequirement('Minimum 6 characters', errors.passwordRequirements.length)}
+                                    {renderPasswordRequirement('At least one uppercase letter', errors.passwordRequirements.uppercase)}
+                                    {renderPasswordRequirement('At least one lowercase letter', errors.passwordRequirements.lowercase)}
+                                    {renderPasswordRequirement('At least one number', errors.passwordRequirements.number)}
+                                    {renderPasswordRequirement('At least one special character', errors.passwordRequirements.specialChar)}
+                                </ul>
+                            </div>
+                            
+                            <div className="form-group-page">
+                                <input
+                                    type="password"
+                                    placeholder="Confirm New Password"
+                                    value={password.confirmPassword}
+                                    onChange={(e) => setPassword({ ...password, confirmPassword: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            
+                            {errors.password && <div className="error-message">{errors.password}</div>}
+                            
+                            <button 
+                                type="submit" 
+                                className="save-button-page"
+                                disabled={!Object.values(errors.passwordRequirements).every(Boolean)}
+                            >
+                                Save Password
+                            </button>
                         </form>
                     </div>
                 </div>
             )}
-
         </div>
     );
 };

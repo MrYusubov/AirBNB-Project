@@ -142,13 +142,13 @@ function HouseGrid({ houses, refreshHouses }) {
     return (
         <div className="ag-theme-alpine" 
         style={{ 
-            height: 700, 
-            width: '100%',
-            '--ag-row-height': '65px',
-            '--ag-cell-horizontal-padding': '15px',
-            '--ag-cell-vertical-padding': '15px',
-            '--ag-font-size': '16px'
-          }}>
+          width: '100%',
+          '--ag-row-height': '65px',
+          '--ag-cell-horizontal-padding': '15px',
+          '--ag-cell-vertical-padding': '15px',
+          '--ag-font-size': '16px'
+        }}
+        >
             <AgGridReact 
                 rowData={houses} 
                 columnDefs={columnDefs}
@@ -177,7 +177,11 @@ function HouseGrid({ houses, refreshHouses }) {
                         transform: 'translate(-50%, -50%)',
                         width: '300px',
                         padding: '20px',
-                    }
+                        zIndex: 1000,
+                    },
+                    overlay: {
+                      zIndex: 1000,
+                  }
                 }}
             >
                 <h2 style={{ marginBottom: '15px' }}>Edit Price</h2>
