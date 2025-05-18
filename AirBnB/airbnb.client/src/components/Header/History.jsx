@@ -17,11 +17,35 @@ function History() {
             try {
                 const response = await axios.get(`https://localhost:7149/api/Bookings/UserBookings/${guestId}`, { withCredentials: true });
                 const today = new Date();
-                setBookings(response.data.filter(b => {
+                const filteredBookings = response.data.filter(b => {
                     const endDate = new Date(b.endDate);
                     return b.isConfirmed && endDate < today;
-                }));
+                });
 
+                const bookingsWithRatings = await Promise.all(
+                    filteredBookings.map(async (booking) => {
+                        try {
+                            const reviewResponse = await axios.get(`https://localhost:7149/api/Review/${booking.house.id}`);
+                            const reviews = reviewResponse.data;
+                            const averageRating = reviews.length > 0
+                                ? (reviews.reduce((sum, r) => sum + r.stars, 0) / reviews.length).toFixed(1)
+                                : null;
+
+                            return {
+                                ...booking,
+                                house: {
+                                    ...booking.house,
+                                    rating: averageRating
+                                }
+                            };
+                        } catch (err) {
+                            console.error("Failed to fetch reviews for house", booking.house.id, err);
+                            return booking;
+                        }
+                    })
+                );
+
+                setBookings(bookingsWithRatings);
             } catch (error) {
                 console.error("Failed to fetch bookings", error);
             }
@@ -77,7 +101,7 @@ function History() {
                             </div>
                         </div>
                     ))}
-    
+
                     <ReviewModal
                         open={isModalOpen}
                         handleClose={closeReviewModal}
@@ -88,7 +112,6 @@ function History() {
             )}
         </div>
     );
-    
 }
 
 export default History;

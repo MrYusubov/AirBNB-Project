@@ -107,13 +107,12 @@ function YourHome() {
                 <div className="reservations-section">
                     <div className="reservations-panel">
                         <h3>Reservations</h3>
-                        {bookings.filter(booking => new Date(booking.startDate) > new Date()).length === 0 ? (
+                        {bookings.length === 0 ? (
                             <p style={{ padding: "10px", color: "#666", fontStyle: "italic" }}>
-                                There are currently no active reservations.
+                                There are currently no reservations.
                             </p>
-                        ) : (bookings
-                            .filter(booking => new Date(booking.startDate) > new Date())
-                            .map((booking) => (
+                        ) : (
+                            bookings.map((booking) => (
                                 <div className="reservation-card" key={booking.id}>
                                     <div className="reservation-info">
                                         <img
