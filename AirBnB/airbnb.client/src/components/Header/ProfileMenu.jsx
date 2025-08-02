@@ -176,12 +176,6 @@ export default function BasicMenu() {
                 width: "100%",
               }}
             />
-            <MenuItem onClick={handleClose} className="menu-items">
-              Airbnb Your Home
-            </MenuItem>
-            <MenuItem onClick={handleClose} className="menu-items">
-              Host an experience
-            </MenuItem>
           </>
         )}
       </Menu>
